@@ -79,7 +79,7 @@ export default function MiniDrawer({ value, handleChange }) {
   const List = ({ orientation }) => {
     return (
       <>
-        {logindetails.roleId == 1 ? (
+        {/* {logindetails.roleId == 1 ? (
           <AntTabs
             value={value}
             onChange={handleChange}
@@ -152,7 +152,7 @@ export default function MiniDrawer({ value, handleChange }) {
               className={classes.Tabcheck}
             />
           </AntTabs>
-        )}
+        )} */}
       </>
     );
   };
@@ -166,7 +166,7 @@ export default function MiniDrawer({ value, handleChange }) {
             <Hidden mdUp>
               <IconButton
                 style={{ color: "#ffff" }}
-                onClick={toggleDrawer("anchor", true)}
+                // onClick={toggleDrawer("anchor", true)}
               >
                 <MenuIcon style={{ fontSize: "35px" }} />
               </IconButton>
@@ -206,21 +206,19 @@ export default function MiniDrawer({ value, handleChange }) {
               <List orientation="horizontal" />
             </div>
             <div className={classes.grow}>
-              <Link
+              {/* <Link
                 to={
                   logindetails.roleId == 1
                     ? "/homecontrol/profile"
                     : "/homecontrol/profilestudost"
                 }
-              >
-                <IconButton>
-                  <Avatar
-                    src={
-                      logindetails.avatarImage ? logindetails.avatarImage : ""
-                    }
-                  />
-                </IconButton>
-              </Link>
+              > */}
+              <IconButton>
+                <Avatar
+                  src={logindetails.avatarImage ? logindetails.avatarImage : ""}
+                />
+              </IconButton>
+              {/* </Link> */}
               <div className={classes.nameDisplay}>
                 <Typography className={classes.name}>
                   {logindetails.profileName}

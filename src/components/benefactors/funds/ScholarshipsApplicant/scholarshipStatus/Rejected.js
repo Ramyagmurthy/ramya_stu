@@ -4,13 +4,14 @@ import SingleApplicantCard from "../../../../atoms/SingleApplicantCard";
 import { CircularProgress, Typography } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 
-const AllApplicants = ({ scholarshipId }) => {
+const AllApplicants = ({ values, scholarshipId }) => {
   const baseUrl = process.env.REACT_APP_URL;
-  // const baseUrl = "http://studost.devkraft.in/studost/api"
 
   const [applicantdata, setApplicantdata] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("");
 
   const classes = useStyles();
 
@@ -38,9 +39,14 @@ const AllApplicants = ({ scholarshipId }) => {
 
     axios(config)
       .then((res) => {
+        setStatus(res.data.body.scholarshipDto.scholarshipStatusDto.label);
+        setName(res.data.body.scholarshipDto.scholarshipName);
         setApplicantdata(res.data.body.applicationList);
         setIsLoading(true);
-        if (res.data.body.applicationList.length == 0) {
+        if (
+          res.data.body.applicationList &&
+          res.data.body.applicationList.length == 0
+        ) {
           setIsEmpty(true);
         }
       })
@@ -49,6 +55,15 @@ const AllApplicants = ({ scholarshipId }) => {
 
   return (
     <div>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <Typography variant="h5">
+          <b>Scholarship Name :</b> {name}
+        </Typography>
+        <Typography variant="h5" style={{ marginLeft: "5%" }}>
+          <b> Scholarship Status : </b>
+          {status}
+        </Typography>
+      </div>
       {isLoading ? (
         applicantdata &&
         applicantdata.length != 0 &&
@@ -94,6 +109,6 @@ const useStyles = makeStyles((theme) => ({
   },
   noData: {
     margin: theme.spacing(30, 0, 20, 30),
-    width:"50%"
+    width: "50%",
   },
 }));

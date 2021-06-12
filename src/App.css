@@ -1,7 +1,327 @@
 .App {
   margin: 0;
   padding: 0;
-  /* text-align: center; */
-  /* background-color: #f1f2f5; */
-  /* color: #2e81f4; */
+}
+button:focus {
+  outline: none;
+}
+
+/* base profile student*/
+
+.workdesk {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1.5;
+  color: #02112c;
+  margin: 0 202px 9px 0;
+}
+.edityourname {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #777777;
+  height: 20px;
+  margin: 9px 16px 23px 0;
+}
+
+.btn__profile {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #00d8ad !important;
+  border: 2px solid #00d8ad;
+  padding: 10px 55px;
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 0px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.cancel__btn {
+  height: 20px;
+  font-size: 17px;
+  line-height: 1.18;
+  color: #3586ff;
+  text-align: left;
+}
+.save__btn {
+  /* height: 48px; */
+  margin: 0px 0 0px 21px;
+  padding: 14px 31px 13px;
+  opacity: 0.5;
+  border-radius: 6px;
+  box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.16);
+  color: #ffffff;
+  background-image: linear-gradient(to right, #0086ff 3%, #00d8ad 78%);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.24;
+  text-transform: capitalize;
+}
+.bg_blue {
+  background-color: rgba(53, 134, 255, 0.03);
+}
+.name__render {
+  height: 23px;
+  margin: 0px 0px 20px 0px;
+  font-family: Poppins;
+  font-size: 16px;
+  font-weight: bolder;
+  line-height: 1.56;
+  text-align: left;
+  color: #02112c;
+}
+.container__padding {
+  padding: 16px;
+}
+
+.upload__btn {
+  color: #3586ff;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 6px;
+  border: solid 1px #3586ff;
+  height: 41px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  align-items: center;
+  margin-top: 50px;
+}
+.link__headertext {
+  height: 17px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #777777;
+}
+#inlineFormInputGroupUsername {
+  font-size: 10px;
+  height: 40px;
+}
+.input-group-text {
+  font-size: 16px;
+}
+.share__btn {
+  background-color: #3586ff;
+  color: #ffffff;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  border-radius: 6px;
+}
+.form-control {
+  height: 17px;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+  color: #818181;
+  height: 50px;
+  border-radius: 6px;
+  padding-right: 16px;
+}
+
+.line__horizontal {
+  height: 20px;
+  border-right: solid 1.1px #a2a2a2;
+  margin-right: 15px;
+  margin-left: 15px;
+}
+.upload__video {
+  height: 31px;
+  font-size: 22px;
+  line-height: 1.5;
+  color: #02112c;
+  font-weight: bolder;
+}
+
+.upload__button {
+  height: 38px;
+  border-radius: 6px;
+  background-color: #3586ff;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.upload__icon {
+  height: 12px;
+  width: 12px;
+  margin-right: 12px;
+}
+
+.red__disclaimer {
+  height: 23px;
+  font-size: 16px;
+  font-weight: bolder;
+  line-height: 1.56;
+  text-align: left;
+  color: #02112c;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  margin-top: 25px;
+  margin-bottom: 50px;
+}
+.error {
+  color: #e05a5a !important;
+  font-size: 12px;
+}
+
+.no_border {
+  border: none;
+  font-size: inherit;
+  color: inherit;
+}
+.no_border:focus {
+  outline: none;
+}
+.flex__center {
+  display: flex;
+  align-items: center;
+}
+/* end of student profile base  */
+
+/* Bio section */
+
+.bio__container {
+  max-width: 950px;
+  margin-left: auto;
+}
+.bio__questions {
+  /* height: 58px; */
+  font-size: 20px;
+  line-height: 1.5;
+  color: #02112c;
+  font-weight: bolder;
+}
+.bio__answer {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #818181;
+  background-color: #ffffff;
+}
+.bio__buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.title__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.educatoin__title {
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: left;
+  color: #02112c;
+  font-weight: bolder;
+}
+
+.br_5 {
+  border-radius: 5px;
+}
+/* education tab */
+
+.education__greenbtn {
+  font-size: 15px !important;
+  font-weight: 500;
+  line-height: 1.53;
+  color: #00d8ad;
+}
+.educatoin__workinghere {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #818181;
+}
+.pro__date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq__mini {
+  font-size: 20px;
+  line-height: 2.64;
+  color: #02112c;
+  font-weight: bold;
+}
+.faq__mini__text {
+  font-size: 16px;
+  color: #02112c;
+}
+
+.mini__faq {
+  margin: 10px;
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+.no__focus::focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* welcome js */
+
+.small__text {
+  font-size: 14px;
+  line-height: 1.86;
+  color: #02112c;
+}
+.small__flexdirection {
+  display: flex;
+}
+
+@media (max-width: 700px) {
+  .faq__mini {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #02112c;
+    font-weight: bold;
+  }
+  .faq__mini__text {
+    font-size: 14px;
+  }
+  .small__nopadding {
+    padding: 0px;
+    margin: 0px;
+  }
+  .small__padding {
+    margin-top: 10px;
+    margin-bottom: 30px;
+  }
+  .cancel__btn {
+    font-size: 15px;
+  }
+  .save__btn {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .small__flexdirection {
+    flex-direction: column;
+  }
+  .red__disclaimer {
+    font-size: 12px;
+  }
+  .bio__buttons {
+    margin-top: 20px;
+    margin-right: 10px;
+  }
+  .bio__questions {
+    height: "auto";
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .education__greenbtn {
+    font-size: 12px !important;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #00d8ad;
+  }
 }

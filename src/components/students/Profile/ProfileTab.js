@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -12,9 +12,59 @@ import ProfileCore from "./core/profilecore";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import MiniDrawer from "../../Nav";
 import { LoginContext } from "../../../Context/LoginContext";
+import { ProtectedRoute } from "../../../ProtectedRoute";
 import axios from "axios";
 import { Hidden } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect,
+  useHistory,
+} from "react-router-dom";
+import PeopleIcon from "@material-ui/icons/People";
+import AppsIcon from "@material-ui/icons/Apps";
+
+const AntTabs = withStyles((theme) => ({
+  root: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: "55px",
+    backgroundColor: "#f3f3f",
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+      paddingLeft: "10px",
+      paddingTop: "10px",
+      justifyContent: "center",
+    },
+  },
+  indicator: {
+    backgroundColor: "transparent",
+  },
+}))(Tabs);
+
+const AntTab = withStyles((theme) => ({
+  root: {
+    minWidth: 72,
+    fontFamily: "Poppins",
+    fontSize: "14px",
+    fontWeight: "500",
+    height: "32px",
+    minHeight: "1px",
+    borderRadius: "5px",
+    "&:hover": {
+      color: "#40a9ff",
+      opacity: 1,
+      textDecoration: "none",
+    },
+    "&$selected": {
+      backgroundColor: "#3586ff",
+      color: "white",
+    },
+  },
+  selected: {},
+}))((props) => <Tab disableRipple {...props} />);
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -51,27 +101,16 @@ function a11yProps(index) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // backgroundColor: theme.palette.background.paper,
-    // backgroundImage: "linear-gradient(to top, #9890e3 0%, #b1f4cf 100%)",
-
     width: "auto",
-    margin: "0px 0px 0px 50px",
     ...theme.mixins.toolbar,
-
     [theme.breakpoints.down("md")]: {
-      width: "md",
       margin: "0px",
     },
-
-    body: {
-      //   width: matchMedia,
-      [theme.breakpoints.down("md")]: {
-        margin: 0,
-      },
-    },
-    disabled__class: {
-      // color: "red",
-    },
+  },
+  label: {
+    minWidth: "150px",
+    display: "flex",
+    justifyContent: "space-around",
   },
 }));
 
@@ -108,42 +147,55 @@ export default function ProfileTab() {
   };
 
   return (
-    <div className={classes.root} style={{ width: matches }}>
-      <AppBar
-        position="static"
-        color="default"
-        style={{ width: "330px", borderRadius: "10px" }}
-      >
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-          // variant="fullWidth"
-          aria-label="full width tabs example"
-        >
-          <Tab label="Base" {...a11yProps(0)} />
+    <Router>
+      <div className={classes.root}>
+        <AppBar position="static" color="default">
+          <AntTabs
+            value={value}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            aria-label="full width tabs example"
+          >
+            <AntTab
+              label={
+                <div className={classes.label}>
+                  <PeopleIcon />
+                  PUBLIC FORM
+                </div>
+              }
+              {...a11yProps(0)}
+              component={Link}
+              to="/homecontrol/profile/"
+            />
 
-          <Tab
-            label="Core"
-            {...a11yProps(1)}
-            disabled={disabled}
-            className={disabled ? classes.disabled__class : null}
-          />
-        </Tabs>
-      </AppBar>
-      <SwipeableViews
-        axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-        index={value}
-        onChangeIndex={handleChangeIndex}
-      >
-        <TabPanel value={value} index={0} dir={theme.direction}>
-          <ProfileBase masterData={data.studentBasicProfileDto} />
-        </TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction}>
-          <ProfileCore masterData={data} />
-        </TabPanel>
-      </SwipeableViews>
-    </div>
+            <AntTab
+              label={
+                <div className={classes.label}>
+                  <AppsIcon />
+                  Main Application
+                </div>
+              }
+              {...a11yProps(1)}
+              component={Link}
+              to="/homecontrol/profile/profilecore/bio"
+            />
+          </AntTabs>
+        </AppBar>
+
+        <SwipeableViews
+          axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+          index={value}
+          onChangeIndex={handleChangeIndex}
+        >
+          <TabPanel value={value} index={0} dir={theme.direction}>
+            <ProfileBase />
+          </TabPanel>
+          <TabPanel value={value} index={1} dir={theme.direction}>
+            <ProfileCore />
+          </TabPanel>
+        </SwipeableViews>
+      </div>
+    </Router>
   );
 }

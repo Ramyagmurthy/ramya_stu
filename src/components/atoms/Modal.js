@@ -11,7 +11,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "block",
     zIndex: 100,
-    // width: "100%",
+    position: "absolute",
+    bottom: "10%",
     "& > * + *": {
       marginTop: theme.spacing(2),
     },

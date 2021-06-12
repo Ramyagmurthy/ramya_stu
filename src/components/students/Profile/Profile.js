@@ -4,16 +4,17 @@ import Nav from "../../Nav";
 import Footer from "../Footer";
 import ProfileTab from "./ProfileTab";
 
-export default function Profile() {
+export default function Profile({ handleChange }) {
+  useEffect(() => {
+    handleChange("a", 1);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
   return (
-    <div
-      style={{
-        backgroundImage: "linear-gradient(to top, #9890e3 0%, #b1f4cf 100%)",
-      }}
-    >
-      {/* <Nav /> */}
+    <div>
       <ProfileTab />
-      {/* <Footer /> */}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import green from "@material-ui/core/colors/green";
 
 const theme = createMuiTheme({
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
+    fontFamily: "Poppins",
     fontSize: 12,
     fontWeight: 300,
     lineHeight: "1.5em",

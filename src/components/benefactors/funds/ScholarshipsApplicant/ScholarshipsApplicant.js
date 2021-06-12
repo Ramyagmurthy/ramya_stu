@@ -15,36 +15,51 @@ const ScholarshipsApplicant = (props) => {
   const [applicantdata, setApplicantdata] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
+  const [telephonic, settelephonic] = useState(false);
+  const [panel, setPanel] = useState(false);
 
   useEffect(() => {
-    getapplicants(props.location.state.scholarshipId);
+    getapplicants(props.location.state.values.scholarshipId);
+    // props.location.state.values.foreach((element) => {
+    //   console.log(element.name);
+    // });
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    const rounds = [...props.location.state.values.selectionProcessRoundSet];
+    rounds.forEach((round) => {
+      if (round.selectionProcessRoundId == 2) {
+        settelephonic(true);
+      } else if (round.selectionProcessRoundId == 3) {
+        setPanel(true);
+      }
+    });
   }, []);
 
   let history = useHistory();
 
   const getapplicants = (id) => {
-    // const body = {
-    //   // applicationFilterDto: {
-    //   //   status: "string",
-    //   // },
-    //   pageNumber: 1,
-    //   scholarshipId: id,
-    //   totalRecordPerPage: 100,
-    // };
+    const body = {
+      scholarshipId: id,
+    };
     const config = {
       method: "post",
-      url: `${baseUrl}/application/categorize-application-count?scholarshipId=${id}`,
+      url: `${baseUrl}/application/categorize-application-count`,
       headers: {
         "Content-Type": "application/json",
       },
-      // data: body,
+      data: body,
     };
 
     axios(config)
       .then((res) => {
         setApplicantdata(res.data.body);
         setIsLoading(true);
-        if (res.data.body.applicationList.length == 0) {
+        if (
+          res.data.body.applicationList &&
+          res.data.body.applicationList.length == 0
+        ) {
           setIsEmpty(true);
         }
       })
@@ -66,9 +81,13 @@ const ScholarshipsApplicant = (props) => {
       </div>
       <div style={{ marginTop: "-60px" }}>
         <ApplicantTab
-          scholarshipId={props.location.state.scholarshipId}
+          values={props.location.state.values}
+          scholarshipId={props.location.state.values.scholarshipId}
           totalApplicants={applicantdata}
           getapplicantscount={getapplicants}
+          data={props.location.state}
+          telephonic={telephonic}
+          panel={panel}
         />
       </div>
     </div>

@@ -15,15 +15,14 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(10),
-      marginLeft: theme.spacing(5),
-     width: "100%",
+      width: "100%",
       display: "flex",
       justifyContent: "center",
     },
     [theme.breakpoints.down("md")]: {
       width: "100%",
       justifyContent: "center",
-    }
+    },
   },
   media: {
     display: "flex",
@@ -33,9 +32,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     fontSize: "20px",
     [theme.breakpoints.down("sm")]: {
-      fontSize: "12px",
+      fontSize: "18px",
       width: "100%",
+      fontWeight: "bold",
     },
+  },
+  icon: {
+    width: "80%",
+    height: "100%",
+    // [theme.breakpoints.down("sm")]: {
+    //   width: "100px",
+    // },
   },
 }));
 
@@ -46,11 +53,7 @@ export default function ProfileCard({ heading, avatar }) {
     <Card className={classes.root}>
       <CardActionArea>
         <CardMedia className={classes.media} title={heading}>
-          <Icon
-            component={avatar}
-            className={classes.icon}
-            style={{ width: "80%", height: "100%" }}
-          />
+          <Icon component={avatar} className={classes.icon} />
         </CardMedia>
         <Typography gutterBottom className={classes.heading__text}>
           {heading}

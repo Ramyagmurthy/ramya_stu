@@ -41,13 +41,16 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
   const [students, setStudents] = useState(true);
   const [benefactors, setBenefactors] = useState(false);
   const [signUp, setSignup] = useState(false);
-  const [roleName, setRoleName] = useState("");
-  const [roleId, setRoleId] = useState("");
+  const [roleName, setRoleName] = useState("Student");
+  const [roleId, setRoleId] = useState(1);
   const [openModal, setOpenModal] = useState(false);
   const [modalmsg, setModalmsg] = useState("");
   const [modalvariation, setModalvariation] = useState("success");
   const [open, setOpen] = useState(true);
   const [loginStatus, setLoginStatus] = useState(false);
+  const [emailM, setEmailM] = useState(false);
+  const [lnameM, setLnameM] = useState(false);
+  const [fnameM, setFnameM] = useState(false);
 
   const history = useHistory();
   const { user } = useContext(LoginContext);
@@ -55,41 +58,61 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
     //e.preventDefault();
 
     //console.log(fname, lname, email, password, roleName, roleId);
-    const data = JSON.stringify({
-      firstName: fname,
-      lastName: lname,
-      password: password,
-      roleDto: {
-        roleId: roleId,
-        roleName: roleName,
-      },
-      signupMessage: "string",
-      userId: 0,
-      userName: email,
-    });
-    const config = {
-      method: "post",
-      url: process.env.REACT_APP_URL + "/user/signup",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: data,
-    };
-    axios(config)
-      .then((response) => {
-        //console.log(response.data);
-        //setSignup(true);
-        setOpenModal(true);
-        setModalmsg(response.data.body.signupMessage);
-        if (response.data.body.signupMessage == "User Created") {
-          setTimeout(() => {
-            setSignup(true);
-            setLoginStatus(true);
-          }, 3000);
+    // if((!errors.firstName && !errors.lastName && !errors.password && !errors.roleName)) {
+    // alert("hi");
+    if(email.length > 255){
+      setEmailM(true);
+    }
+    if(lname.length > 255){
+      setLnameM(true);
+    }
+    if(fname.length > 255){
+      setFnameM(true);
+    }
+    if(email.length < 255 && lname.length < 255 && fname.length < 255) {
+        const data = JSON.stringify({
+          firstName: fname,
+          lastName: lname,
+          password: password,
+          roleDto: {
+            roleId: roleId,
+            roleName: roleName,
+          },
+          signupMessage: "string",
+          userId: 0,
+          userName: email,
+        });
+        const config = {
+          method: "post",
+          url: process.env.REACT_APP_URL + "/user/signup",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
+        axios(config)
+          .then((response) => {
+            //console.log(response.data);
+            //setSignup(true);
+
+            if (response.data.body.signupMessage == "User created") {
+              setModalmsg(response.data.body.signupMessage);
+              setModalvariation("success");
+              setOpenModal(true);
+              setTimeout(() => {
+                // setBenifatorStatus(false);
+                setLoginStatus(true);
+              }, 2000);
+            } else {
+              setOpenModal(true);
+              setModalmsg(response.data.body.signupMessage);
+              setModalvariation("warning");
+            }
+            // setLoginStatus(true);
+          })
+          .catch((err) => console.log(err));
+        // }
         }
-        setLoginStatus(true);
-      })
-      .catch((err) => console.log(err));
   };
   const handleChange = (event) => {
     setRoleName(event.target.value);
@@ -104,19 +127,20 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
       {loginStatus && <Login setLoginStatus={setLoginStatus} />}
 
       {/* <div className={classes.root}> */}
-      <SimpleModal
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-        modalmsg={modalmsg}
-        modalvariation={modalvariation}
-        setModalvariation={setModalvariation}
-      />
-      {signUp ? <Redirect to="/signin" /> : null}
+
+      {/* {signUp ? <Redirect to="/signin" /> : null} */}
       <Dialog
         open={true}
         aria-labelledby="form-dialog-title"
         className={classes.modalBody}
       >
+        <SimpleModal
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          modalmsg={modalmsg}
+          modalvariation={modalvariation}
+          setModalvariation={setModalvariation}
+        />
         <div className={classes.closebutton}>
           <IconButton
             className={classes.avatar}
@@ -158,6 +182,11 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
                       Enter the first name
                     </Typography>
                   )}
+                  {
+                    fnameM && <Typography style={{color:"red"}}>
+                    Exceeding 255 charecter
+                  </Typography>
+                  }
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -179,6 +208,11 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
                       Enter the last name
                     </Typography>
                   )}
+                  {
+                    lnameM && <Typography style={{color:"red"}}>
+                    Exceeding 250 character
+                  </Typography>
+                  }
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
@@ -196,6 +230,11 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
                   {errors.email && (
                     <Typography color="secondary">enter email</Typography>
                   )}
+                  {
+                    emailM && <Typography style={{color:"red"}}>
+                    Exceeding 250 character
+                  </Typography>
+                  }
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
@@ -224,7 +263,6 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
                     name="Role"
                     value={roleName}
                     onChange={handleChange}
-                    inputProps={{ ...register("roleName", { required: true }) }}
                   >
                     <div
                       style={{
@@ -234,16 +272,20 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
                     >
                       <FormControlLabel
                         value="Student"
-                        control={<Radio />}
+                        control={
+                          <Radio checked={roleId === 1 ? true : false} />
+                        }
                         label="Student"
                       />
                       <FormControlLabel
                         value="Benefactor"
-                        control={<Radio />}
+                        control={
+                          <Radio checked={roleId === 2 ? true : false} />
+                        }
                         label="Benefactor"
                       />
                     </div>
-                    {errors.roleName && !roleId && (
+                    {!roleId && (
                       <Typography color="secondary" align="center">
                         select one
                       </Typography>
@@ -256,7 +298,7 @@ export default function BenifactoreSignUp({ setBenifatorStatus }) {
                 fullWidth
                 variant="contained"
                 color="primary"
-                onClick={handleSignUp}
+                // onClick={handleSignUp}
                 className={classes.submit}
               >
                 Sign Up

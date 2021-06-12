@@ -13,24 +13,30 @@ import image6 from "./../assets/assets1/images/social21.svg";
 import image7 from "./../assets/assets1/images/social31.svg";
 import image8 from "./../assets/assets1/images/social41.svg";
 import Login from "./../components/students/LoginPage";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-
 import "./../assets/assets1/css/main.css";
+import * as yup from "yup";
+import Navbar from "../StaticPageComponents/StaticNavBar";
+import { Link } from "react-router-dom";
 
 const ContactUsView = () => {
-  const [logoWidth, setlogoWidth] = useState(160);
-  const matches = useMediaQuery("(min-width:600px)");
-  const [cssStyle, setCssStyle] = useState(
-    "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-  );
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [fnamev, setFnamev] = useState(false);
-  const [lnamev, setLnamev] = useState(false);
-  const [emailv, setEmailv] = useState(false);
-  const [messagev, setMessagev] = useState(false);
+  const [fnamev, setFnamev] = useState(true);
+  const [lnamev, setLnamev] = useState(true);
+  const [emailv, setEmailv] = useState(true);
+  const [messagev, setMessagev] = useState(true);
+  const [fnameM, setFnameM] = useState(true);
+  const [lnameM, setLnameM] = useState(true);
+  const [emailM, setEmailM] = useState(true);
+  const [messageM, setMessageM] = useState(true);
   const [total, setTotalv] = useState(false);
   const [modalmsg, setModalmsg] = useState("");
   const [modalvariation, setModalvariation] = useState("success");
@@ -38,157 +44,105 @@ const ContactUsView = () => {
   const [loginStatus, setLoginStatus] = useState(false);
 
   const baseUrl = process.env.REACT_APP_URL;
-  // const baseUrl = "http://studost.devkraft.in/studost/api"
 
   const url = `${baseUrl}/contact-us/save-contact-details`;
 
   const handleSubmit1 = () => {
-    if (fname.length === 0) setFnamev(true);
-    else setFnamev(false);
-    if (lname.length === 0) setLnamev(true);
-    else setLnamev(false);
-    if (email.length === 0) setEmailv(true);
-    else setEmailv(false);
-    if (message.length === 0) setMessagev(true);
-    else setMessagev(false);
-    //console.log("hi");
-
-    if (!(!fnamev || !lnamev || !emailv || !messagev)) {
-      const body = {
-        emailId: email,
-        firstName: fname,
-        lastName: lname,
-        message: message,
-      };
-      const config = {
-        method: "post",
-        url: url,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: body,
-      };
-
-      axios(config)
-        .then((response) => {
-          //console.log(response);
-          setFname("");
-          setFnamev(false);
-          setLname("");
-          setLnamev(false);
-          setEmail("");
-          setEmailv(false);
-          setMessage("");
-          setMessagev(false);
-          setOpenModal(true);
-          setModalmsg("Message sucessfully sent ");
-        })
-        .catch((err) => {
-          console.log(err);
-          setOpenModal(true);
-          setModalmsg(err.Error);
-        });
-    } else {
-      setOpenModal(false);
-      setModalmsg(false);
+    let fnames = true;
+    if (fname.length === 0) {
+      setFnamev(false);
+      fnames = false;
+    } else setFnamev(true);
+    if (fname.length > 255) {
+      setFnameM(false);
+      fnames = false;
+    } else setFnameM(true);
+    let lnames = true;
+    if (lname.length === 0) {
+      setLnamev(false);
+      lnames = false;
+    } else setLnamev(true);
+    if (lname.length > 255) {
+      setLnameM(false);
+      lnames = false;
+    } else setLnameM(true);
+    let messages = true;
+    if (message.length === 0) {
+      setMessagev(false);
+      messages = false;
+    } else setMessagev(true);
+    if (message.length > 3000) {
+      setMessageM(false);
+      messages = false;
+    } else setMessageM(true);
+    if (email.length > 255) {
+      setEmailM(true);
     }
-  };
-
-  useEffect(() => {
-    //console.log(matches);
-    if (!matches) {
-      setlogoWidth(100);
-    } else {
-      setlogoWidth(100);
-    }
-    // console.log(window.scrollY);
-    document.addEventListener("scroll", () => {
-      if (window.scrollY < 100)
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-        );
-      else
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-        );
+    let emailValue = email;
+    let emails = true;
+    let schema = yup.object().shape({
+      emailSchema: yup.string().email().max(255).required(),
     });
-  }, [window.scrollY]);
+    schema
+      .isValid({
+        emailSchema: emailValue,
+      })
+      .then(function (valid) {
+        setEmailv(valid);
+        emails = valid;
+        if (fnames && lnames && emails && messages) {
+          const body = {
+            emailId: email,
+            firstName: fname,
+            lastName: lname,
+            message: message,
+          };
+          const config = {
+            method: "post",
+            url: url,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: body,
+          };
+          console.log("sending");
 
-  const changeNav = () => {
-    if (cssStyle != "navbar navbar-expand-lg navbar-dark fixed-top bg-theme") {
-      setCssStyle("navbar navbar-expand-lg navbar-dark fixed-top bg-theme");
-    } else {
-      setCssStyle(
-        "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-      );
-    }
+          axios(config)
+            .then((response) => {
+              console.log(response);
+              setFname("");
+              setFnamev(true);
+              setLname("");
+              setLnamev(true);
+              setEmail("");
+              setEmailv(true);
+              setMessage("");
+              setMessagev(true);
+              setOpenModal(true);
+              setModalmsg("Message sucessfully sent ");
+            })
+            .catch((err) => {
+              console.log(err);
+              setOpenModal(true);
+              setModalmsg(err.Error);
+            });
+        } else {
+          setOpenModal(false);
+          setModalmsg(false);
+        }
+      });
+
+    if (email.length === 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailv(false);
+      emails = false;
+    } else setEmailv(true);
   };
 
   return (
     <>
+      <Navbar value="contact" />
       {loginStatus && <Login setLoginStatus={setLoginStatus} />}
-      <nav className={cssStyle}>
-        <div class="container">
-          <a class="navbar-brand" href="/">
-            <img className="logo" src={image1} width={logoWidth} alt="logo" />
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-            onClick={changeNav}
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Home
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="about">
-                  About Us
-                </a>
-              </li>
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  data-toggle="dropdown"
-                  href="#"
-                >
-                  How It Works
-                </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <a href="student">Find a Scholarship</a>
-                  </li>
-                  <li>
-                    <a href="findscholar">Find a Scholar</a>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item active">
-                <a className="nav-link">Contact Us</a>
-              </li>
-            </ul>
-            <div
-              className="btn"
-              onClick={() => {
-                setLoginStatus(true);
-              }}
-            >
-              {" "}
-              LOGIN
-            </div>
-          </div>
-        </div>
-      </nav>
+
       {/* <!---------- END: Header ------------->
 
 <!---------- START: Slider -------------> */}
@@ -215,7 +169,12 @@ const ContactUsView = () => {
                 top: "50px",
               }}
             >
-              <p className="title" style={{ margin: "0px" }}>
+              <p
+                className="title"
+                style={{
+                  margin: "0px",
+                }}
+              >
                 Contact us
               </p>
             </div>
@@ -230,7 +189,9 @@ const ContactUsView = () => {
         <div className="container">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <a href="/">Home</a>
+              <Link to="/" style={{ textDecoration: "none" }}>
+                <a>Home</a>
+              </Link>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
               Contact Us
@@ -268,8 +229,11 @@ const ContactUsView = () => {
                     setFname(e.target.value);
                   }}
                 />
-                {fnamev && (
+                {!fnamev && (
                   <p style={{ color: "red" }}>Please enter the first name</p>
+                )}
+                {!fnameM && (
+                  <p style={{ color: "red" }}>Exceeding 255 character</p>
                 )}
                 <input
                   type="text"
@@ -281,8 +245,11 @@ const ContactUsView = () => {
                   placeholder="Last Name"
                   required
                 />
-                {lnamev && (
+                {!lnamev && (
                   <p style={{ color: "red" }}>Please enter the last name</p>
+                )}
+                {!lnameM && (
+                  <p style={{ color: "red" }}>Exceeding 255 character</p>
                 )}
                 <input
                   type="email"
@@ -294,8 +261,11 @@ const ContactUsView = () => {
                   }}
                   required
                 />
-                {emailv && (
+                {!emailv && (
                   <p style={{ color: "red" }}>Please enter the email</p>
+                )}
+                {!emailM && (
+                  <p style={{ color: "red" }}>Exceeding 255 character</p>
                 )}
                 <textarea
                   rows="4"
@@ -307,24 +277,20 @@ const ContactUsView = () => {
                   }}
                   required
                 ></textarea>
-                {messagev && (
+                {!messagev && (
                   <p style={{ color: "red" }}>Please enter the message</p>
                 )}
+                {!messageM && (
+                  <p style={{ color: "red" }}>Exceeding 3000 character</p>
+                )}
                 <div
+                  class="btn theme  m-0"
                   type="submit"
                   onClick={() => {
                     handleSubmit1();
                   }}
                 >
-                  <div
-                    class="btn theme  m-0"
-                    type="submit"
-                    // onClick={() => {
-                    //   handleSubmit1();
-                    // }}
-                  >
-                    SEND US MESSAGE
-                  </div>
+                  SEND US MESSAGE
                 </div>
               </div>
             </form>
@@ -359,8 +325,6 @@ const ContactUsView = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </>
   );
 };

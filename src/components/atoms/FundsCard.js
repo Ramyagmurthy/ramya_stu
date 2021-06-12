@@ -45,6 +45,7 @@ import { useTheme } from "@material-ui/core/styles";
 import DateFnsUtils from "@date-io/date-fns";
 
 export default function FundsCard({
+  index,
   values,
   getAllScholarships,
   reLoadScholarships,
@@ -82,28 +83,64 @@ export default function FundsCard({
       ? [...logindetails.masterData.scholarshipStatusDtoList]
       : [];
   const [value, setvalue] = useState([]);
+  useEffect(() => {
+    // let days = lastDate.split("-");
+    // console.log(days[1]);
+    // let monthNumber = "01";
+    // if (days[1] == "Jan") {
+    //   monthNumber = "01";
+    // } else if (days[1] == "Feb") {
+    //   monthNumber = "02";
+    // } else if (days[1] == "Mar") {
+    //   monthNumber = "03";
+    // } else if (days[1] == "Apr") {
+    //   monthNumber = "04";
+    // } else if (days[1] == "May") {
+    //   monthNumber = "05";
+    // } else if (days[1] == "Jun") {
+    //   monthNumber = "06";
+    // } else if (days[1] == "Jul") {
+    //   monthNumber = "07";
+    // } else if (days[1] == "Aug") {
+    //   monthNumber = "08";
+    // } else if (days[1] == "Sep") {
+    //   monthNumber = "09";
+    // } else if (days[1] == "Oct") {
+    //   monthNumber = "10";
+    // } else if (days[1] == "Nov") {
+    //   monthNumber = "11";
+    // } else if (days[1] == "Dec") {
+    //   monthNumber = "12";
+    // }
+    // const lastDate2 = (days[0] + "-" + monthNumber + "-" + days[2]);
+    // console.log(days[0] + "-" + monthNumber + "-" + days[2]);
+    // alert(days[2] + "-" + monthNumber + "-" + days[0]);
+    // setLastDate(lastDate2);
+  }, []);
 
   const [openModal, setOpenModal] = useState(false);
   const [modalmsg, setModalmsg] = useState("");
   const [modalvariation, setModalvariation] = useState("success");
-  const [sname, setSname] = useState();
+  const [sname, setSname] = useState(values.scholarshipName);
   const [checkSname, setCheckSname] = useState(false);
-  const [saim, setSaim] = useState();
+  const [saim, setSaim] = useState(values.scholarshipAim);
   const [checkSaim, setCheckSaim] = useState(false);
-  const [sIcandidate, setSIcandidate] = useState();
+  const [sIcandidate, setSIcandidate] = useState(
+    values.scholarshipIdealCandidateDescription
+  );
   const [checkSicandidate, setCheckSicandidate] = useState(false);
-  const [samount, setSamount] = useState(0);
+  const [samount, setSamount] = useState(values.amount);
   const [checkSamount, setCheckSamount] = useState(false);
   const [scity, setScity] = useState({ name: "", id: "" });
   const [scountry, setScountry] = useState({ name: "", id: "" });
   const [sgender, setSgender] = useState({ name: "", id: "" });
-  const [sdurationY, setSdurationY] = useState(0);
-  const [sdurationM, setSdurationM] = useState(0);
-  const [sLastDate, setSLastDate] = useState();
-  const [sno, setSno] = useState();
+  const [sdurationY, setSdurationY] = useState(values.durationInYears);
+  const [sdurationM, setSdurationM] = useState(values.durationInMonths);
+  const [sLastDate, setSLastDate] = useState("hi");
+  const [sno, setSno] = useState(values.totalNumberOfScholarships);
   const [sField, setSField] = useState({ name: "", id: "" });
 
-  const [lastDate, setLastDate] = useState("2022-01-01");
+  const [lastDate, setLastDate] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   const [myscholarships, setmyscholarships] = useState([]);
@@ -119,11 +156,14 @@ export default function FundsCard({
   const [institutesList, setInstitutesList] = useState([]);
   const [selectionProcessRounds, setSelectionProcessRounds] = useState([]);
   const [statusList, setStatusList] = useState([]);
-  const scholarshipId = values.scholarshipId;
+  const [indexId, setIndexId] = useState(values.scholarshipId);
+  const [snameM, setSnameM] = useState(false);
+  const [saimM, setSaimM] = useState(false);
+  const [sIcandidateM, setSIcandidateM] = useState(false);
 
   const baseUrl = process.env.REACT_APP_URL;
 
-  const [image, setImage] = useState(
+  const [image, setimage] = useState(
     values.scholarshipImagePath ? values.scholarshipImagePath : ""
   );
 
@@ -139,11 +179,12 @@ export default function FundsCard({
   };
 
   const addPhoto = (e) => {
-    //console.log(e);
+    console.log("from pic 1", indexId);
+    console.log("from pic 2", index);
     let formdata = new FormData();
-    formdata.append("file", e);
+    formdata.append("file", e.target.files[0]);
     formdata.append("userId", logindetails.userData.userId);
-    formdata.append("scholarshipId", scholarshipId);
+    formdata.append("scholarshipId", values.scholarshipId);
     formdata.append("benefactorId", logindetails.userData.benefactorId);
     formdata.append("operationType", "U");
 
@@ -163,7 +204,7 @@ export default function FundsCard({
         setOpenModal(true);
         setModalmsg(response.data.message);
         setModalvariation("success");
-        setImage(response.data.body.objectUri);
+        setimage(response.data.body.objectUri);
         reLoadScholarships();
         // getUserinfo(logindetails.user);
         getAllScholarships(logindetails.userData.benefactorId);
@@ -223,6 +264,36 @@ export default function FundsCard({
     // ) {
     //   return;
     // } else {
+
+    // let days = lastDate.split("-");
+    // console.log(days[1]);
+    // let monthNumber = "01";
+    // if (days[1] == "Jan") {
+    //   monthNumber = "01";
+    // } else if (days[1] == "Feb") {
+    //   monthNumber = "02";
+    // } else if ((days[1] == "Mar")) {
+    //   monthNumber = "03";
+    // } else if ((days[1] == "Apr")) {
+    //   monthNumber = "04";
+    // } else if ((days[1] == "May")) {
+    //   monthNumber = "05";
+    // } else if ((days[1] == "Jun")) {
+    //   monthNumber = "06";
+    // } else if ((days[1] == "Jul")) {
+    //   monthNumber = "07";
+    // } else if ((days[1] == "Aug")) {
+    //   monthNumber = "08";
+    // } else if ((days[1] == "Sep")) {
+    //   monthNumber = "09";
+    // } else if ((days[1] == "Oct")) {
+    //   monthNumber = "10";
+    // } else if ((days[1] == "Nov")) {
+    //   monthNumber = "11";
+    // } else if ((days[1] == "Dec")) {
+    //   monthNumber = "12";
+    // }
+    // const lastDate2 = days[2] + "-" + monthNumber + "-" + days[0];
     const body = {
       amount: Number(samount),
       benefactorId: logindetails.userData.benefactorId,
@@ -279,32 +350,49 @@ export default function FundsCard({
       },
       data: body,
     };
+    if (sname.length > 1000) {
+      setSnameM(true);
+    } else setSnameM(false);
+    if (saim.length > 2000) {
+      setSaimM(true);
+    } else setSaimM(false);
+    if (sIcandidate.length > 1500) {
+      setSIcandidateM(true);
+    } else setSIcandidateM(false);
+    if (
+      sname.length <= 1000 &&
+      saim.length <= 2000 &&
+      sIcandidate.length <= 1500
+    ) {
+      axios(config)
+        .then((response) => {
+          console.log(response.data);
+          setOpenModal(true);
+          setModalmsg(response.data.message);
+          getAllScholarships(logindetails.user);
 
-    //console.log(body);
-    axios(config)
-      .then((response) => {
-        //console.log(response.data);
-        setOpenModal(true);
-        setModalmsg(response.data.message);
-        getAllScholarships(logindetails.user);
-
-        setAddfunds(true);
-        if (response.data.status == 200) {
-          setModalvariation("success");
-        } else {
-          setModalvariation("error");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setOpenModal(true);
-        setModalmsg("oops !! something went wrong ");
-      });
+          setAddfunds(true);
+          if (response.data.status == 200) {
+            setModalvariation("success");
+          } else {
+            setModalvariation("error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenModal(true);
+          setModalmsg("oops !! something went wrong ");
+        });
+    }
     // }
   };
 
   const dateChange = (e) => {
-    setLastDate(e.getFullYear() + "-" + e.getMonth() + "-" + e.getDate());
+    console.log(e);
+    if (e)
+      setLastDate(
+        e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate()
+      );
   };
 
   const closenewFund = () => {
@@ -384,18 +472,15 @@ export default function FundsCard({
                 style={{ width: "100%", height: "100%" }}
                 src={image}
               >
-                <IconButton
-                  style={{ width: "100%", height: "100%" }}
-                  onChange={(e) => addPhoto(e.target.files[0])}
-                >
-                  <label htmlFor="file-input">
+                <IconButton style={{ width: "100%", height: "100%" }}>
+                  <label htmlFor={values.scholarshipName}>
                     <AddAPhotoIcon style={{ width: "30%", height: "30%" }} />
                   </label>
                   <input
-                    id="file-input"
+                    id={values.scholarshipName}
                     type="file"
                     style={{ display: "none" }}
-                    onChange={(e) => addPhoto(e.target.files[0])}
+                    onChange={(e) => addPhoto(e)}
                   />
                 </IconButton>
               </Avatar>
@@ -466,46 +551,61 @@ export default function FundsCard({
             <div
               style={{
                 width: "100%",
-                alignItems: "center",
-                justifyContent: "space-evenly",
               }}
             >
-              <Link
+              <div
                 style={{
-                  textDecoration: "none",
-                }}
-                to={{
-                  pathname: `/homecontrol/launchfund/${values.scholarshipId}`,
-                  state: values,
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-evenly",
                 }}
               >
-                <Button variant="contained" color="primary">
-                  <label htmlFor="input">Check all applicants</label>
+                <Link
+                  className={classes.button}
+                  to={{
+                    pathname: `/homecontrol/launchfund/${values.scholarshipId}`,
+                    state: { values: values },
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    style={{
+                      textTransform: "none",
+                      borderRadius: theme.spacing(2),
+                    }}
+                  >
+                    Check All Applicants
+                  </Button>
+                </Link>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  style={{ paddingBottom: "0px" }}
+                >
+                  <label htmlFor={values.scholarshipName}>Edit Photo</label>
                 </Button>
-              </Link>
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ marginLeft: "10px", paddingBottom: "-5px" }}
-              >
-                <label htmlFor="file-input">Edit Photo</label>
+
                 <input
-                  id="file-input"
+                  id={values.scholarshipName}
                   type="file"
                   style={{ display: "none" }}
-                  onChange={(e) => addPhoto(e.target.files[0])}
+                  onChange={(e) => addPhoto(e)}
                 />
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ marginLeft: "10px" }}
-                onClick={() => {
-                  setAddfunds(false);
-                }}
-              >
-                <label htmlFor="input">Edit file</label>
-              </Button>
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setAddfunds(false);
+                  }}
+                >
+                  Edit File
+                </Button>
+              </div>
               <Card className={classes.newfund} hidden={addfunds}>
                 <div
                   style={{
@@ -532,6 +632,11 @@ export default function FundsCard({
                     required
                   />
                 </div>
+                {snameM && (
+                  <Typography style={{ color: "red" }}>
+                    Exceeding 1000 character
+                  </Typography>
+                )}
                 <div className={classes.eachfield}>
                   <Typography className={classes.labeltypo} variant="subtitle1">
                     Scholarship Aim{" "}
@@ -547,6 +652,11 @@ export default function FundsCard({
                     required
                   />
                 </div>
+                {saimM && (
+                  <Typography style={{ color: "red" }}>
+                    Exceeding 2000 character
+                  </Typography>
+                )}
                 <div className={classes.eachfield}>
                   <Typography className={classes.labeltypo} variant="subtitle1">
                     Ideal Candidate{" "}
@@ -562,6 +672,11 @@ export default function FundsCard({
                     required
                   />
                 </div>
+                {sIcandidateM && (
+                  <Typography style={{ color: "red" }}>
+                    Exceeding 2000 character
+                  </Typography>
+                )}
                 <div className={classes.eachfield}>
                   <Typography className={classes.labeltypo} variant="subtitle1">
                     Based On{" "}
@@ -744,6 +859,14 @@ export default function FundsCard({
                       input={<Input />}
                       MenuProps={MenuProps}
                     >
+                      <MenuItem
+                        key={"hemanth"}
+                        value={"hemanth"}
+                        style={getStyles("Hemanth", city, theme)}
+                      >
+                        <Checkbox checked={city.indexOf("hemanth") > -1} />
+                        <ListItemText primary={"hemanth"} />
+                      </MenuItem>
                       {genderList.map((name) => (
                         <MenuItem
                           key={name.name}
@@ -981,7 +1104,7 @@ export default function FundsCard({
                       : false
                   }
                 >
-                  Launch Scholarship
+                  Update Scholarship
                 </Button>
               </Card>
 
@@ -991,7 +1114,7 @@ export default function FundsCard({
                 </Typography>
 
                 <Typography style={{ marginRight: "10px", marginLeft: "10px" }}>
-                  : {values.scholarshipStatusDto.name}
+                  : {values.scholarshipStatusDto.label}
                 </Typography>
               </div>
               <div className={classes.details__accordian}>
@@ -1273,6 +1396,12 @@ const useStyles = makeStyles((theme) => ({
     color: "red",
   },
   submit: {
+    borderRadius: theme.spacing(2),
+  },
+  button: {
+    width: "30%",
+    textTransform: "none",
+    textDecoration: "none",
     borderRadius: theme.spacing(2),
   },
 }));

@@ -35,6 +35,9 @@ import ForgotPassword from "./components/students/ForgotPassword";
 import Team from "./StaticPageComponents/Team/Team";
 import BenifactoreSignUp from "./components/benefactors/BenifactoreSignUp";
 import qs from "qs";
+import Explore from "./views/ExploreStudosts";
+import ExploreStudent from "./views/ExploreStudents";
+import Footer from "./StaticPageComponents/LandingPageComponents/Footer";
 
 function App() {
   const [email, setEmail] = useState();
@@ -57,15 +60,15 @@ function App() {
   useEffect(() => {
     getMasterData();
     // alert(window.sessionStorage.getItem("roleId"));
-    if (window.sessionStorage.getItem("login")) {
-      getUserInfo(
-        window.sessionStorage.getItem("userId"),
-        window.sessionStorage.getItem("roleId"),
-        window.sessionStorage.getItem("KC")
-      );
-      setUser(window.sessionStorage.getItem("userId"));
-      setLogin(true);
-    }
+    // if (window.sessionStorage.getItem("login")) {
+    //   getUserInfo(
+    //     window.sessionStorage.getItem("userId"),
+    //     window.sessionStorage.getItem("roleId"),
+    //     window.sessionStorage.getItem("KC")
+    //   );
+    //   setUser(window.sessionStorage.getItem("userId"));
+    //   setLogin(true);
+    // }
   }, []);
   const handlesubmit = (e) => {
     // e.preventDefault();
@@ -73,10 +76,11 @@ function App() {
   };
 
   const baseUrl = process.env.REACT_APP_URL;
+  const client = process.env.REACT_APP_KC_CLIENT;
 
   const loginAPi = (username, password) => {
     const body = qs.stringify({
-      client_id: "studost",
+      client_id: client,
       grant_type: "password",
       username: username,
       password: password,
@@ -160,19 +164,21 @@ function App() {
       };
       axios(config)
         .then((res) => {
+          history.push("/homecontrol/home");
           setProfileName(
             res.data.body.studentBasicProfileDto.firstName +
               " " +
               res.data.body.studentBasicProfileDto.lastName
           );
+          setFirstName(res.data.body.studentBasicProfileDto.firstName);
+          setLastName(res.data.body.studentBasicProfileDto.lastName);
 
-          if (res.data.body.studentId != 0) {
-            setUserData(res.data.body);
-            setAvatarImage(res.data.body.objectUrl);
-            history.push("/homecontrol/home");
-          } else if (res.data.body.studentId == 0) {
-            createStudentID(res.data.body.studentBasicProfileDto, kc);
-          }
+          // if (res.data.body.studentId != 0) {
+          setUserData(res.data.body);
+          setAvatarImage(res.data.body.objectUrl);
+          // } else if (res.data.body.studentId == 0) {
+          //   createStudentID(res.data.body.studentBasicProfileDto, kc);
+          // }
         })
         .catch((err) => console.log(err, "from student get", id));
     } else if (role == 2) {
@@ -199,50 +205,50 @@ function App() {
         .catch((err) => console.log(err));
     }
   };
-  const createStudentID = (data, kc) => {
-    const bodyCreate = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phoneNumber: 9000000000,
-      socialMediaDtoList: [
-        {
-          name: "Linkedin",
-          socialMediaId: 1,
-          url: "add linkedin url",
-        },
-        {
-          name: "Facebook",
-          socialMediaId: 2,
-          url: "add facebook url",
-        },
-        {
-          name: "Twitter",
-          socialMediaId: 3,
-          url: "add twitter url",
-        },
-      ],
+  // const createStudentID = (data, kc) => {
+  //   const bodyCreate = {
+  //     firstName: data.firstName,
+  //     lastName: data.lastName,
+  //     phoneNumber: 9000000000,
+  //     socialMediaDtoList: [
+  //       {
+  //         name: "Linkedin",
+  //         socialMediaId: 1,
+  //         url: "add linkedin url",
+  //       },
+  //       {
+  //         name: "Facebook",
+  //         socialMediaId: 2,
+  //         url: "add facebook url",
+  //       },
+  //       {
+  //         name: "Twitter",
+  //         socialMediaId: 3,
+  //         url: "add twitter url",
+  //       },
+  //     ],
 
-      studentId: 0,
-      summary: "write something",
-      userId: data.userId,
-    };
-    const config = {
-      method: "post",
-      url: `${baseUrl}/student/create-basic-profile`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + kc.access_token,
-      },
-      data: bodyCreate,
-    };
-    axios(config)
-      .then((res) => {
-        //console.log("new data available", res.data.body);
-        //console.log("from that thing", data.userId);
-        getUserInfo(data.userId, 1);
-      })
-      .catch((err) => console.log("something went wrong"));
-  };
+  //     studentId: 0,
+  //     summary: "write something",
+  //     userId: data.userId,
+  //   };
+  //   const config = {
+  //     method: "post",
+  //     url: `${baseUrl}/student/create-basic-profile`,
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: "Bearer " + kc.access_token,
+  //     },
+  //     data: bodyCreate,
+  //   };
+  //   axios(config)
+  //     .then((res) => {
+  //       console.log("new data available", res.data.body);
+  //       console.log("from that thing", data.userId);
+  //       getUserInfo(data.userId, 1);
+  //     })
+  //     .catch((err) => console.log("something went wrong"));
+  // };
   const logindetails = {
     firstName,
     lastName,
@@ -308,14 +314,28 @@ function App() {
             <Route path="/student/signup" component={BenifactoreSignUp} />
             <Route path="/forgotpassword" component={ForgotPassword} />
             <Route path="/ourteam" component={Team} />
-            <Route exact path="/signin" component={LoginPage} />
             <Route exact path="/contactus" component={ContactUsView} />
             <Route exact path="/findscholar" component={HowStudost} />
             <Route exact path="/student" component={HowStudent} />
             <Route exact path="/about" component={About} />
             <ProtectedRoute path="/homecontrol" component={HomeControl} />
             <Route exact path="/" component={LandingView} />
+
+            <Route
+              exact
+              path="/explore-scholars"
+              render={(props) => (
+                <ExploreStudent {...props} masterData={masterData} />
+              )}
+            />
+
+            <Route
+              exact
+              path="/explore-funds"
+              render={(props) => <Explore {...props} masterData={masterData} />}
+            />
           </Switch>
+          <Footer />
         </LoginContext.Provider>
       </SnackbarProvider>
     </ThemeProvider>

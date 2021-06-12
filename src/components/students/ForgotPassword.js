@@ -26,8 +26,10 @@ import { LoginContext } from "../../Context/LoginContext";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { SnackbarProvider } from "notistack";
-import SimpleModal from '../atoms/Modal';
-import {useHistory} from 'react-router-dom'
+import SimpleModal from "../atoms/Modal";
+import { useHistory } from "react-router-dom";
+import Login from "./../students/LoginPage";
+import BenifactoreSignUp from "./../benefactors/BenifactoreSignUp";
 function ForgetPassword() {
   const classes = useStyles();
   const {
@@ -36,52 +38,105 @@ function ForgetPassword() {
     formState: { errors },
   } = useForm();
 
-  let history = useHistory()
+  let history = useHistory();
   const logindetails = useContext(LoginContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [openModal,setOpenModel] = useState(false);
-  const [msg, setMsg] =useState("");
+  const [openModal, setOpenModel] = useState(false);
+  const [msg, setMsg] = useState("");
   const [modalvariation, setModalvariation] = useState("success");
+  const [forgetPassword, forgetPasswordStatus] = useState(true);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [opt, setOpt] = useState("");
+  const [loginStatus, setLoginStatus] = useState(false);
+  const [benifatorStatus, setBenifatorStatus] = useState(false);
+
   const submitForm = (e) => {
     const body = {
       userName: email,
-      newPassword: password,
     };
     const config = {
       method: "post",
-      url: `${baseUrl}/resetpassword?userName=${email}&newPassword=${password}`,
+      url: `${baseUrl}/otp/generateOTP`,
       headers: {
         "Content-Type": "application/json",
       },
-      data: body,
+      data: email,
     };
-    // console.log(filterBody);
+    console.log(email);
     axios(config)
       .then((res) => {
-        setOpenModel(true)
-        setMsg("Password Changed Successfully")
-        setModalvariation("success")
-        setTimeout(
-          function(){ 
-            history.push("/") 
-          }, 1000);
-        
+        setOpenModel(true);
+        console.log(res);
+        if (res.data.status == 204) {
+          setMsg("This username is not registered with studost.");
+          setModalvariation("warning");
+        } else {
+          setMsg("OTP has been sent to your mail");
+          setModalvariation("success");
+          setTimeout(forgetPasswordStatus(false), 1000);
+        }
       })
+
       .catch((err) => {
         console.log(err);
-        setOpenModel(true)
-        setMsg("Something Went Wrong")
-        setModalvariation("error")
-        
+        setOpenModel(true);
+        setMsg("Something Went Wrong");
+        setModalvariation("error");
       });
   };
+
+  const submitForm2 = () => {
+    if (newPassword == confirmPassword) {
+      const body = {
+        newPassword: newPassword,
+        otp: opt,
+        userName: email,
+      };
+      const config = {
+        method: "post",
+        url: `${baseUrl}/otp/validateOTP`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: body,
+      };
+      axios(config)
+        .then((res) => {
+          setOpenModel(true);
+          console.log(res);
+          if (res.data.status == 200) {
+            setMsg("Details saved successfully");
+            setModalvariation("success");
+            setTimeout(function () {
+              setLoginStatus(true);
+            }, 3000);
+          } else {
+            setMsg(res.data.message);
+            setModalvariation("warning");
+          }
+        })
+
+        .catch((err) => {
+          console.log(err);
+          setOpenModel(true);
+          setMsg("Something Went Wrong");
+          setModalvariation("error");
+        });
+    }
+  };
+
   const baseUrl = process.env.REACT_APP_URL;
 
   const getRecomendations = () => {};
   return (
     <>
-    <SimpleModal
+      {loginStatus && <Login setLoginStatus={setLoginStatus} />}
+      {benifatorStatus && (
+        <BenifactoreSignUp setBenifatorStatus={setBenifatorStatus} />
+      )}
+      <SimpleModal
         openModal={openModal}
         setOpenModal={setOpenModel}
         modalmsg={msg}
@@ -132,79 +187,180 @@ function ForgetPassword() {
                   Forgot Password
                 </Typography>
               </Card>
-              <form
-                className={classes.form}
-                onSubmit={handleSubmit(submitForm)}
-              >
-                <FormControl className={classes.forminputs}>
-                  <InputLabel>Email</InputLabel>
-                  <Input
-                    type="email"
-                    id="email"
-                    label="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <EmailIcon style={{ color: "grey" }} />
-                      </InputAdornment>
-                    }
-                    inputProps={{ ...register("email", { required: true }) }}
-                  />
-                  {errors.email && (
-                    <Typography color="secondary">
-                      Please enter the email
-                    </Typography>
-                  )}
-                </FormControl>{" "}
-                <FormControl className={classes.forminputs}>
-                  <InputLabel>New Password</InputLabel>
-                  <Input
-                    type="password"
-                    id="password"
-                    label="password"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <LockOutlinedIcon style={{ color: "grey" }} />
-                      </InputAdornment>
-                    }
-                    inputProps={{ ...register("password", { required: true }) }}
-                  />
-                  {errors.password && (
-                    <Typography color="secondary">
-                      Please enter the password
-                    </Typography>
-                  )}
-                </FormControl>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  className={classes.submit}
-                  // onClick={submitForm}
+              {forgetPassword && (
+                <form
+                  className={classes.form}
+                  onSubmit={handleSubmit(submitForm)}
                 >
-                  Change Password
-                </Button>
-                <Grid container>
-                  <Grid item xs={12}>
-                    {/* <Link href="#" variant="body2">
-                      Forgot password?
-                    </Link> */}
+                  <FormControl className={classes.forminputs}>
+                    <InputLabel>Email</InputLabel>
+                    <Input
+                      type="email"
+                      id="email"
+                      label="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                      }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <EmailIcon style={{ color: "grey" }} />
+                        </InputAdornment>
+                      }
+                      inputProps={{ ...register("email", { required: true }) }}
+                    />
+                    {errors.email && (
+                      <Typography color="secondary">
+                        Please enter the email
+                      </Typography>
+                    )}
+                  </FormControl>{" "}
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    className={classes.submit}
+                    // onClick={submitForm}
+                  >
+                    Submit
+                  </Button>
+                  <Grid container>
+                    <Grid item xs={12}></Grid>
                   </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid item xs={12}>
-                    {" "}
+                  <Grid container>
+                    <Grid item xs={12}>
+                      {" "}
+                    </Grid>
                   </Grid>
-                </Grid>
-              </form>
+                </form>
+              )}
+              {!forgetPassword && (
+                <form
+                  className={classes.form}
+                  onSubmit={handleSubmit(submitForm2)}
+                >
+                  <FormControl className={classes.forminputs}>
+                    <InputLabel>Email</InputLabel>
+                    <Input
+                      type="email"
+                      id="email"
+                      label="email"
+                      value={email}
+                      readOnly={true}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <EmailIcon style={{ color: "grey" }} />
+                        </InputAdornment>
+                      }
+                      inputProps={{ ...register("email", { required: true }) }}
+                    />
+                    {errors.email && (
+                      <Typography color="secondary">
+                        Please enter the email
+                      </Typography>
+                    )}
+                  </FormControl>{" "}
+                  <FormControl className={classes.forminputs}>
+                    <InputLabel>New Password</InputLabel>
+                    <Input
+                      type="password"
+                      id="newPassword"
+                      label="password"
+                      value={newPassword}
+                      onChange={(e) => {
+                        setNewPassword(e.target.value);
+                      }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <LockOutlinedIcon style={{ color: "grey" }} />
+                        </InputAdornment>
+                      }
+                      inputProps={{
+                        ...register("newPassword", { required: true }),
+                      }}
+                    />
+                    {errors.newPassword && (
+                      <Typography color="secondary">
+                        Please enter the password
+                      </Typography>
+                    )}
+                  </FormControl>
+                  <FormControl className={classes.forminputs}>
+                    <InputLabel>Confirm Password</InputLabel>
+                    <Input
+                      type="password"
+                      id="confirmPassword"
+                      label="password"
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                      }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <LockOutlinedIcon style={{ color: "grey" }} />
+                        </InputAdornment>
+                      }
+                      inputProps={{
+                        ...register("confirmPassword", { required: true }),
+                      }}
+                    />
+                    {errors.confirmPassword && (
+                      <Typography color="secondary">
+                        Please enter the password
+                      </Typography>
+                    )}
+                    <FormControl className={classes.forminputs}>
+                      <InputLabel>OTP</InputLabel>
+                      <Input
+                        type="opt"
+                        id="opt"
+                        label="otp"
+                        value={opt}
+                        required
+                        onChange={(e) => {
+                          setOpt(e.target.value);
+                        }}
+                        inputProps={{ ...register("otp", { required: true }) }}
+                      />
+                      {errors.opt && (
+                        <Typography color="secondary">
+                          Please enter the email
+                        </Typography>
+                      )}
+                    </FormControl>{" "}
+                  </FormControl>
+                  {newPassword != confirmPassword && (
+                    <Typography style={{ color: "red" }}>
+                      New password and confirm Password should be same
+                    </Typography>
+                  )}
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    className={classes.submit}
+                  >
+                    Submit
+                  </Button>
+                  <Typography
+                    fullWidth
+                    onClick={submitForm}
+                    style={{ color: "blue", cursor: "pointer" }}
+                  >
+                    Resend otp
+                  </Typography>
+                  <Grid container>
+                    <Grid item xs={12}></Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={12}>
+                      {" "}
+                    </Grid>
+                  </Grid>
+                </form>
+              )}
             </div>
           </Paper>
         </Container>
@@ -242,7 +398,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
   submit: {
-    margin: theme.spacing(0, 0, 2),
+    margin: theme.spacing(4, 0, 2),
     // backgroundImage: "linear-gradient(120deg, #84FAB0
   },
   formitems: {

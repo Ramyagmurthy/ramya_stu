@@ -416,11 +416,20 @@ const useStyles = makeStyles((theme) => ({
     height: "auto",
     // padding: theme.spacing(0, 2, 0, 8),
     paddingRight: "10px",
+    [theme.breakpoints.down("md")]: {
+      paddingRight: "0px",
+    },
   },
   paperarea: {
     minHeight: "100vh",
     maxWidth: theme.spacing(30),
-    backgroundColor: "rgba(255,255,255,0.5)",
+    backgroundColor: "rgba(255,255,255,1)",
+    [theme.breakpoints.down("md")]: {
+      minHeight: "1vh",
+      maxHeight: "80vh",
+      maxWidth: "100%",
+      overflow: "scroll",
+    },
   },
   header: {
     padding: theme.spacing(3),

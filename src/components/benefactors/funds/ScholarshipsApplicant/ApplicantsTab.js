@@ -48,9 +48,7 @@ function a11yProps(index) {
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    // backgroundColor: "red",
     display: "flex",
-    // height: "100vh",
     width: "100%",
   },
   tabs: {
@@ -83,11 +81,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function VerticalTabs({ scholarshipId, totalApplicants,getapplicantscount }) {
+export default function VerticalTabs({
+  values,
+  scholarshipId,
+  totalApplicants,
+  getapplicantscount,
+  telephonic,
+  panel,
+}) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
-
-  // console.log("from application tab", totalApplicants);
 
   let total = 0;
   if (totalApplicants) {
@@ -106,10 +109,9 @@ export default function VerticalTabs({ scholarshipId, totalApplicants,getapplica
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    getapplicantscount(scholarshipId)
-
+    getapplicantscount(scholarshipId);
   };
-// console.log("totalApplicants",totalApplicants)
+  // console.log("totalApplicants",totalApplicants)
   return (
     <div className={classes.root}>
       <Tabs
@@ -134,30 +136,38 @@ export default function VerticalTabs({ scholarshipId, totalApplicants,getapplica
           }
           {...a11yProps(0)}
         />
+
         <AntTab
+          disabled={!telephonic}
           className={classes.tab__box}
           label={
             <div className={classes.labelBox}>
-              <Typography> Telephonic</Typography>
-              <Typography className={classes.number}>
-                {totalApplicants
-                  ? totalApplicants.countOfTelephonicTabApplications
-                  : 0}
-              </Typography>
+              <>
+                <Typography> Telephonic</Typography>
+                <Typography className={classes.number}>
+                  {totalApplicants
+                    ? totalApplicants.countOfTelephonicTabApplications
+                    : 0}
+                </Typography>
+              </>
             </div>
           }
           {...a11yProps(1)}
         />
+
         <AntTab
+          disabled={!panel}
           className={classes.tab__box}
           label={
             <div className={classes.labelBox}>
-              <Typography> Panell</Typography>
-              <Typography className={classes.number}>
-                {totalApplicants
-                  ? totalApplicants.countOfPanelTabApplications
-                  : 0}
-              </Typography>
+              <>
+                <Typography> Panel</Typography>
+                <Typography className={classes.number}>
+                  {totalApplicants
+                    ? totalApplicants.countOfPanelTabApplications
+                    : 0}
+                </Typography>
+              </>
             </div>
           }
           {...a11yProps(2)}
@@ -194,6 +204,7 @@ export default function VerticalTabs({ scholarshipId, totalApplicants,getapplica
       <div className={classes.Tab__body}>
         <TabPanel value={value} index={0}>
           <AllApplicants
+            values={values}
             scholarshipId={scholarshipId}
             setNoOfApplicants={setNoOfApplicants}
             getapplicantscount={getapplicantscount}
@@ -201,19 +212,31 @@ export default function VerticalTabs({ scholarshipId, totalApplicants,getapplica
         </TabPanel>
         <TabPanel value={value} index={1}>
           <Telephone
+            values={values}
             scholarshipId={scholarshipId}
             setNoOfTelephoni={setNoOfTelephoni}
             getapplicantscount={getapplicantscount}
           />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <Panel scholarshipId={scholarshipId} setNoOfPanel={setNoOfPanel} getapplicantscount={getapplicantscount} />
+          <Panel
+            values={values}
+            scholarshipId={scholarshipId}
+            setNoOfPanel={setNoOfPanel}
+            getapplicantscount={getapplicantscount}
+          />
         </TabPanel>
         <TabPanel value={value} index={3}>
-          <Won scholarshipId={scholarshipId} setNoOfWon={setNoOfWon} getapplicantscount={getapplicantscount}/>
+          <Won
+            values={values}
+            scholarshipId={scholarshipId}
+            setNoOfWon={setNoOfWon}
+            getapplicantscount={getapplicantscount}
+          />
         </TabPanel>
         <TabPanel value={value} index={4}>
           <Rejected
+            values={values}
             scholarshipId={scholarshipId}
             setNoOfRejected={setNoOfRejected}
             getapplicantscount={getapplicantscount}

@@ -11,6 +11,7 @@ import {
   Input,
   Container,
   InputLabel,
+  FormControl,
   Tooltip,
   Badge,
   Popover,
@@ -76,6 +77,16 @@ function ProfileinfoB({ handleChange }) {
   const [fName, setFName] = useState(baseInfo.firstName);
   const [lName, setLName] = useState(baseInfo.lastName);
 
+  const [fNameM, setFNameM] = useState(false);
+  const [lNameM, setLNameM] = useState(false);
+  const [facebookIdM, setFacebookIdM] = useState(false);
+  const [linkedinIdM, setLinkedinIdM] = useState(false);
+  const [twitterIdM, setTwitterIdM] = useState(false);
+  const [addressM, setAddressM] = useState(
+    false
+  );
+  const [bioM, setBioM] = useState(false);
+
   const [phoneNumber, setPhoneNumber] = useState(
     baseInfo.phoneNumber ? baseInfo.phoneNumber : ""
   );
@@ -83,7 +94,7 @@ function ProfileinfoB({ handleChange }) {
     logindetails.email ? logindetails.email : "Enter email address here"
   );
   const [gender, setgender] = useState(
-    baseInfo.genderDto!= null ? baseInfo.genderDto.name : ""
+    baseInfo.genderDto != null ? baseInfo.genderDto.name : ""
   );
   const [genderName, setGenderName] = useState("");
   const [address, setAddress] = useState(
@@ -95,6 +106,9 @@ function ProfileinfoB({ handleChange }) {
   const [linkedinId, setLinkedinId] = useState("");
   const [twitterId, setTwitterId] = useState("");
   const [checkFname, setCheckFname] = useState(false);
+  const [city, setCity] = useState("");
+  const [pinCode, setPinCode] = useState("");
+  const [cityList, setCityList] = useState([]);
 
   const getSocialMediaList = (socialMediaDtoList) => {
     // console.log("from social list----", baseInfo.socialMediaDtoList);
@@ -111,10 +125,22 @@ function ProfileinfoB({ handleChange }) {
     }
   };
 
+  const getMasterData = () => {
+    axios
+      .get(`${baseUrl}/master/get-master-data`)
+      .then((res) => {
+        console.log(res.data.body);
+        setCityList(res.data.body.cityDtoList);
+        // console.log(res.data.body);
+      })
+      .catch((err) => console.log(`${baseUrl}/master/get-master-data`));
+  };
+
   useEffect(() => {
     handleChange("a", 1);
     // console.log("profile base", logindetails);
     getUserinfo(logindetails.user);
+    getMasterData();
   }, []);
   const classes = useStyles();
   const baseUrl = process.env.REACT_APP_URL;
@@ -126,6 +152,11 @@ function ProfileinfoB({ handleChange }) {
       : `${baseUrl}/benefactor/save-basic-profile`;
 
   const body = {
+    cityDto: {
+      cityId: city.cityId,
+      name: city.name,
+      operationType: "U",
+    },
     address: address,
     benefactorId: baseInfo.benefactorId,
     bio: bio,
@@ -159,6 +190,7 @@ function ProfileinfoB({ handleChange }) {
       },
     ],
     userId: baseInfo.userId,
+    pinCode: pinCode,
   };
 
   const config = {
@@ -178,13 +210,54 @@ function ProfileinfoB({ handleChange }) {
   };
 
   const saveChanges = () => {
+    // console.log(body);
+    if(fName.length > 255) {
+      setFNameM(true);
+    } else setFNameM(false);
+    if(lName.length > 255) {
+      setLNameM(true);
+    } else setLNameM(false);
+    if(address.length > 1000) {
+      setAddressM(true);
+    } else setAddressM(false);
+    if(bio.length > 2000) {
+      setBioM(true);
+    } else setBioM(false);
+    if(linkedinId.length > 500) {
+      setLinkedinIdM(true);
+    } else setLinkedinIdM(false);
+    if(facebookId.length > 500) {
+      setFacebookIdM(true);
+    } else setFacebookIdM(false);
+    if(twitterIdM.length > 500) {
+      setTwitterIdM(true);
+    } else setTwitterIdM(false);
+    if(fName.length <= 255 && lName.length <= 255 && address.length <= 1000 && bio.length <=2000 && linkedinId.length <= 500 && facebookId.length <= 500 && twitterIdM.length <= 500 ) {
+      axios(config)
+    .then((response) => {
+      console.log("save idea---", response.data);
+      setOpenModal(true);
+      setModalmsg(response.data.message);
+    })
+    .catch((err) => {
+      setOpenModal(true);
+      setModalmsg(err.message);
+      setModalvariation("error");
+      console.log(err);
+    });
+    
+    setAddClass(true);
+    setaddPic(true);
+    setSaveButton("none");
+    setEdit(false);
+    }
     if (
       fName.length == 0 ||
       !fName ||
       lName.length == 0 ||
       !lName ||
-      genderName.length == 0 || 
-      phoneNumber.length < 11 || 
+      genderName.length == 0 ||
+      phoneNumber.length < 11 ||
       phoneNumber.length > 10 ||
       !gender ||
       phoneNumber.length == 0 ||
@@ -202,23 +275,6 @@ function ProfileinfoB({ handleChange }) {
       setCheckFname(false);
     }
 
-    setAddClass(true);
-    setaddPic(true);
-    setSaveButton("none");
-    setEdit(false);
-    // console.log(body);
-    axios(config)
-      .then((response) => {
-        // console.log("save idea---", response.data);
-        setOpenModal(true);
-        setModalmsg(response.data.message);
-      })
-      .catch((err) => {
-        setOpenModal(true);
-        setModalmsg(err.message);
-        setModalvariation("error");
-        console.log(err);
-      });
   };
 
   const addPhoto = (e) => {
@@ -297,18 +353,22 @@ function ProfileinfoB({ handleChange }) {
     axios
       .get(baseUrl + `/benefactor/load-benefactor-profile-data?userId=${id}`)
       .then((res) => {
-        setGenderName(res.data.body.benefactorBasicProfileDto.genderDto.name);   
+        console.log(res);
+        logindetails.setUserData(res.data.body);
+        setGenderName(res.data.body.benefactorBasicProfileDto.genderDto.name);
         setAvatar(res.data.body.objectUrl);
         setBio(res.data.body.benefactorBasicProfileDto.bio);
         setPhoneNumber(res.data.body.benefactorBasicProfileDto.phoneNumber);
+        setCity(res.data.body.benefactorBasicProfileDto.cityDto);
+        setPinCode(res.data.body.benefactorBasicProfileDto.pinCode);
         setAddress(res.data.body.benefactorBasicProfileDto.address);
         getSocialMediaList(
           res.data.body.studentBasicProfileDto.socialMediaDtoList
         );
-        logindetails.setUserData(res.data.body);
       })
       .catch((err) => console.log(err));
   };
+
   return (
     <div className={classes.root}>
       <SimpleModal
@@ -413,6 +473,11 @@ function ProfileinfoB({ handleChange }) {
                       Enter Full Name
                     </Typography>
                   )}
+                  { (fNameM || lNameM) && (
+                    <Typography style={{ color: "red" }}>
+                      Exceeding 255 character
+                    </Typography>
+                  )}
                 </Hidden>
 
                 {/*                   
@@ -498,45 +563,76 @@ function ProfileinfoB({ handleChange }) {
                       </InputAdornment>
                     }
                   />
-                  {checkFname && (phoneNumber.length < 1 || phoneNumber.length < 10 || phoneNumber.length > 10) && (
-                    <Typography style={{ color: "red" }} align="left">
-                      enter phoneNumber
-                    </Typography>
-                  )}
+                  {checkFname &&
+                    (phoneNumber.length < 1 ||
+                      phoneNumber.length < 10 ||
+                      phoneNumber.length > 10) && (
+                      <Typography style={{ color: "red" }} align="left">
+                        enter phoneNumber
+                      </Typography>
+                    )}
                 </Hidden>
               </Grid>
+              <Grid item xs={2} />
               <Grid item xs={12} container className={classes.first}>
+              <Grid item xs={5} container className={classes.first}>
                 <Hidden xsUp={!addClass}>
                   <div>
                     <InputLabel>Email</InputLabel>
                     <Typography>{emailAddress}</Typography>
                   </div>
                 </Hidden>
-                <Hidden xsUp={addClass}>
-                  <div>
-                    <InputLabel>Email</InputLabel>
-                    <Typography>{emailAddress}</Typography>
+              </Grid>
+              <Hidden xsUp={!addClass}>
+              <Grid item xs={1} container className={classes.first}></Grid>
+              <Grid item xs={5} container className={classes.first}>
+              <div>
+                    <InputLabel>City</InputLabel>
+                    <Typography>{city.name}-{pinCode}</Typography>
                   </div>
-                </Hidden>
-                {/* <Hidden xsUp={addClass}>
-                  <Input
-                  disabled
-                    value={emailAddress}
-                    onChange={(e) => setEmailAddress(e.target.value)}
-                    fullWidth
-                    readOnly={addClass}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <EmailIcon style={{ color: "grey" }} />
-                      </InputAdornment>
-                    }
+              </Grid>
+              </Hidden>
+              </Grid>
+              <Grid item xs={12} container className={classes.first}>
+              <Hidden xsUp={addClass}>
+                <div className={classes.citypin}>
+                
+                  <FormControl
+                    variant="outlined"
+                    className={classes.cityListClass}
+                  >
+                    <InputLabel id="demo-simple-select-outlined-label">
+                      City
+                    </InputLabel>
+                    <Select
+                      value={city}
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                      }}
+                      label="City"
+                      readOnly={addClass}
+                    >
+                      <MenuItem value={city}>
+                        <em>{city.name}</em>
+                      </MenuItem>
+                      {cityList &&
+                        cityList.map((cities) => (
+                          <MenuItem value={cities}>{cities.name}</MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                  
+                  <Grid item xs={2} container className={classes.first}></Grid>
+                  <Grid item xs={5} container className={classes.first}>
+                  <TextField
+                    label="Pin Code"
+                    variant="outlined"
+                    value={pinCode}
+                    onChange={(e) => setPinCode(e.target.value)}
                   />
-                  {checkFname && emailAddress.length < 1 && (
-                    <Typography style={{ color: "red" }} align="left">
-                      enter the email
-                    </Typography>
-                  )}
-                </Hidden> */}
+                  </Grid>
+                </div>
+              </Hidden>
               </Grid>
             </Grid>
           </Grid>
@@ -575,6 +671,11 @@ function ProfileinfoB({ handleChange }) {
                 enter the bio
               </Typography>
             )}
+            {bioM && (
+              <Typography style={{ color: "red" }} align="left">
+                Exceeding 2000 charactor
+              </Typography>
+            )}
             <TextField
               style={{ marginTop: "20px" }}
               value={address}
@@ -590,6 +691,11 @@ function ProfileinfoB({ handleChange }) {
             {checkFname && address.length < 1 && (
               <Typography style={{ color: "red" }} align="left">
                 enter the address
+              </Typography>
+            )}
+            {addressM && (
+              <Typography style={{ color: "red" }} align="left">
+                Exceeding 1000 character
               </Typography>
             )}
           </Hidden>
@@ -612,7 +718,7 @@ function ProfileinfoB({ handleChange }) {
                 justifyContent: "space-between",
               }}
             >
-              <Tooltip title="Linkedin">
+              <Tooltip title={linkedinId ? linkedinId :"Linkedin"}>
                 <div>
                   <IconButton href={linkedinId} target="_blank">
                     <LinkedInIcon
@@ -627,10 +733,15 @@ function ProfileinfoB({ handleChange }) {
                     placeholder="https://www.linkedin.com"
                     onChange={(e) => setLinkedinId(e.target.value)}
                   />
+                  {linkedinIdM && (
+              <Typography style={{ color: "red" }} align="left">
+                Exceeding 500 character
+              </Typography>
+            )}
                 </div>
               </Tooltip>
 
-              <Tooltip title="Facebook">
+              <Tooltip title={facebookId ? facebookId :"Facebook"}>
                 <div>
                   <IconButton href={facebookId} target="_blank">
                     <FacebookIcon
@@ -644,9 +755,14 @@ function ProfileinfoB({ handleChange }) {
                     value={facebookId}
                     placeholder="https://www.facebook.com"
                   />
+                  {facebookIdM && (
+              <Typography style={{ color: "red" }} align="left">
+                Exceeding 500 character
+              </Typography>
+            )}
                 </div>
               </Tooltip>
-              <Tooltip title="Twitter">
+              <Tooltip title={twitterId ? twitterId :"Twitter"}>
                 <div>
                   <IconButton href={twitterId} target="_blank">
                     <TwitterIcon
@@ -661,6 +777,12 @@ function ProfileinfoB({ handleChange }) {
                     onChange={(e) => setTwitterId(e.target.value)}
                     value={twitterId}
                   />
+                  {twitterIdM && (
+              <Typography style={{ color: "red" }} align="left">
+                Exceeding 500 character
+              </Typography>
+            )}
+                  
                 </div>
               </Tooltip>
             </Grid>
@@ -770,7 +892,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     width: theme.spacing(40),
-    height: theme.spacing(25),
+    height: theme.spacing(35),
     marginTop: theme.spacing(5),
     borderRadius: theme.spacing(2),
     display: "flex",
@@ -832,5 +954,13 @@ const useStyles = makeStyles((theme) => ({
     height: "30px",
     borderRadius: "50%",
     backgroundColor: "#f1f2f5",
+  },
+  cityListClass: {
+    width: "50%",
+  },
+  citypin: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
   },
 }));

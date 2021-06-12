@@ -63,8 +63,12 @@ const DiscoverBody = ({
           </Tooltip>
         </div>
       </div>
-      <div style={{ width: "99%" }}>
-        <Accordion fullWidth onChange={DisplayScholarshipsList} className={classes.accordion}>
+      <div style={{ width: "100%" }}>
+        <Accordion
+          fullWidth
+          onChange={DisplayScholarshipsList}
+          className={classes.accordion}
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon className={classes.expanIcon} />}
             aria-controls="panel1a-content"
@@ -75,19 +79,16 @@ const DiscoverBody = ({
                 <Typography className={classes.heading__accordian}>
                   Recomended for you
                 </Typography>
-                {/* <Typography className={classes.heading__smaller}>
-                  Based on your profile and search history
-                </Typography> */}
               </div>
               <div className={classes.recommendations}>
                 <Typography className={classes.number}>
                   {recomendationList ? recomendationList.length : 0}
                 </Typography>
-                <div style={{display:"flex",flexDirection:"column"}}>
-                <Typography>Funds Recommendations</Typography>
-                <Typography className={classes.heading__smaller}>
-                  Based on your profile and search history
-                </Typography>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <Typography>Funds Recommendations</Typography>
+                  <Typography className={classes.heading__smaller}>
+                    Based on your profile and search history
+                  </Typography>
                 </div>
               </div>
             </div>
@@ -119,9 +120,7 @@ const DiscoverBody = ({
                 displayScholarships ? { display: "block" } : { display: "none" }
               }
             >
-              <Fade in={true} disableStrictModeCompat={true}>
-                <DiscoverCard values={card} key={i * Math.random() * 1000} />
-              </Fade>
+              <DiscoverCard values={card} key={i * Math.random() * 1000} />
             </div>
           );
         })
@@ -181,16 +180,9 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
-    // "&:hover": {
-    //   backgroundColor: fade(theme.palette.common.white, 0.25),
-    // },
     marginRight: theme.spacing(2),
     marginLeft: 0,
     width: "80%",
-    //  [theme.breakpoints.up("sm")]: {
-    //    marginLeft: theme.spacing(3),
-    //   width: "60%",
-    //  },
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -240,20 +232,16 @@ const useStyles = makeStyles((theme) => ({
   summaryAccordian: {
     display: "flex",
     alignItems: "center",
-    // border: "2px solid pink",
-    width: "100%",
     [theme.breakpoints.down("md")]: {
-      width: "100%",
-    },
-    [theme.breakpoints.down("xs")]: {
-      width: "100%",
+      flexDirection: "column",
+      height: "100px",
+      justifyContent: "space-between",
     },
   },
   recommendations: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    // border: "2px solid red",
     marginRight: "auto",
     marginLeft: "auto",
   },
@@ -288,6 +276,5 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]: {
       width: "100%",
     },
-  }
-  
+  },
 }));

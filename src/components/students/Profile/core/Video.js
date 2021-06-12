@@ -27,13 +27,17 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
       marginLeft: "0px",
       marginRight: "0px",
-      paddingTop: theme.spacing(0),
+      paddingTop: theme.spacing(5),
     },
   },
   paperarea: {
     padding: theme.spacing(10),
     paddingTop: theme.spacing(5),
     borderRadius: theme.spacing(2),
+    [theme.breakpoints.down("md")]: {
+      padding: theme.spacing(2),
+      paddingTop: theme.spacing(5),
+    },
   },
   submit: {
     borderRadius: theme.spacing(2),
@@ -57,36 +61,59 @@ function Recommendation(props) {
   // console.log("from video", logindetails.userData.videoProfileObjectUri);
 
   const addVideo = (e) => {
-    let formdataV = new FormData();
-    formdataV.append("file", e);
-    formdataV.append("userId", logindetails.userData.userId);
-    formdataV.append("operationType", "U");
+    console.log(e.size);
 
-    let configV = {
-      method: "post",
-      url: `${baseUrl}/student/upload-user-video-profile`,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      data: formdataV,
-    };
+    if (e.size < 5242880) {
+      if (
+        !e.name.includes(".doc") &&
+        !e.name.includes(".pdf") &&
+        !e.name.includes(".jpg") &&
+        !e.name.includes(".jpeg") &&
+        !e.name.includes(".png") &&
+        !e.name.includes(".svg") &&
+        !e.name.includes(".csv") &&
+        !e.name.includes(".xls")
+      ) {
+        let formdataV = new FormData();
+        formdataV.append("file", e);
+        formdataV.append("userId", logindetails.userData.userId);
+        formdataV.append("operationType", "U");
 
-    axios(configV)
-      .then((response) => {
-        // console.log(JSON.stringify(response.data));
-        setSrc(response.data.body.videoProfileObjectUri);
-        // setOpenModal(true);
-        setModalmsg(response.data.message);
-        props.enqueueSnackbar("Successfully Saved", {
-          variant: "success",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        props.enqueueSnackbar("Something went wrong", {
+        let configV = {
+          method: "post",
+          url: `${baseUrl}/student/upload-user-video-profile`,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          data: formdataV,
+        };
+
+        axios(configV)
+          .then((response) => {
+            // console.log(JSON.stringify(response.data));
+            setSrc(response.data.body.videoProfileObjectUri);
+            // setOpenModal(true);
+            setModalmsg(response.data.message);
+            props.enqueueSnackbar("Successfully Saved", {
+              variant: "success",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            props.enqueueSnackbar("Something went wrong", {
+              variant: "error",
+            });
+          });
+      } else {
+        props.enqueueSnackbar("video only", {
           variant: "error",
         });
+      }
+    } else {
+      props.enqueueSnackbar("less than 5MB only", {
+        variant: "error",
       });
+    }
   };
 
   useEffect(() => {
@@ -126,7 +153,7 @@ function Recommendation(props) {
           container
           style={{
             display: "flex",
-            flexDirection:"column",
+            flexDirection: "column",
             justifyContent: "space-evenly",
             alignItems: "center",
             // paddingBottom: "60px",
@@ -145,10 +172,8 @@ function Recommendation(props) {
                     fontSize: "50px",
                   }}
                 />
-
               </label>
-          
-              
+
               <input
                 type="file"
                 id="vidoe-file"

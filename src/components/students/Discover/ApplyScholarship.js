@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { makeStyles, createMuiTheme } from "@material-ui/core/styles";
+import React, { useContext, useEffect, useState } from "react";
+import { makeStyles, createMuiTheme, withStyles } from "@material-ui/core/styles";
 import Nav from "../../Nav";
 import Footer from "../../comps/Footer";
 import { LoginContext } from "../../../Context/LoginContext";
@@ -15,6 +15,10 @@ import {
   CardContent,
   Card,
   Box,
+  InputLabel,
+  FormControl,
+  MenuItem,
+  Select,
 } from "@material-ui/core";
 import SchoolIcon from "@material-ui/icons/School";
 import DomainIcon from "@material-ui/icons/Domain";
@@ -31,6 +35,21 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import FingerprintIcon from "@material-ui/icons/Fingerprint";
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { CheckOutlined } from "@material-ui/icons";
+
 
 const theme = createMuiTheme();
 
@@ -105,7 +124,65 @@ const useStyles = makeStyles({
     width: "2%",
     cursor: "pointer",
   },
+  education__style: {
+    margin: theme.spacing(2),
+    padding: theme.spacing(2, 4),
+    borderRadius: theme.spacing(2),
+    [theme.breakpoints.down("md")]: {
+      width: "100%",
+     marginLeft: "0px",
+    },
+  },
+  rounding__edge: {
+    borderRadius: theme.spacing(2),
+  },
+
+ 
 });
+
+
+const styles = (theme) => ({
+  Muiroot: {
+    margin: 0,
+    padding: theme.spacing(2),
+  },
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+});
+
+
+
+const DialogTitleName = withStyles(styles)((props) => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.Muiroot} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
+
+const DialogContentData = withStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2),
+  },
+}))(MuiDialogContent);
+
+const DialogActionsData = withStyles((theme) => ({
+  root: {
+    margin: 0,
+    padding: theme.spacing(1),
+  },
+}))(MuiDialogActions);
+
 function ApplyScholarship(props) {
   const classes = useStyles();
   const logindetails = useContext(LoginContext);
@@ -120,11 +197,45 @@ function ApplyScholarship(props) {
   const [questions, setQuestions] = useState(props.location.state.scholarshipQuestionsSet);
   const [answers, setAnswers] = useState([]);
   const [checkAnswer, setCheckAnswer] = useState();
+  const [checked, setChecked] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [desc, setDesc] = useState("");
+  const [finalAnswer,setFinalAnswer] = useState([]);
+  const [validation, setValidation] = useState([]);
+  const [wordCounter, setWordCounter] = useState([]);
+  const [charecterCounter, setCharecterCounter] = useState([]);
+  const [descM, setDescM] = useState(false);
+  const [fields, setFields] = useState([]);
+  const[checkStart, setCheckStart] = useState(false)
+  const[checkEnd, setCheckEnd] = useState(false);
+  const [submitValid, setSubmitValid] = useState(false);
+
+  useEffect(()=> {
+    let validationLenght = [...props.location.state.scholarshipQuestionsSet]
+    let valid = [...validation];
+    let wordCounterValid = [...wordCounter];
+    let charecterCounterValid = [...charecterCounter];
+    for(let i = 0; i < validationLenght.length; i++){
+      valid.push(false);
+      wordCounterValid.push(0);
+      charecterCounterValid.push(0);
+    }
+    setValidation(valid);
+    setWordCounter(wordCounterValid);
+    setCharecterCounter(charecterCounterValid);
+  }, []);
 
   const handleSubmit = (e) => {
     //console.log(e);
+    setSubmitValid(true);
     for (let i = 0; i < questions.length; i++) {
-      if(questions[i].answer.length == 0 || !questions[i].answer ){
+      if(!questions[i].answer)
+      return
+      let word = questions[i].answer.split(" ");
+      if(questions[i].answer.length == 0 || !questions[i].answer || word.length < 251 || 
+        word.length > 300 || 
+        questions[i].answer.length > 5000 ){
         setCheckAnswer(i);
         return;
       } else {
@@ -132,16 +243,55 @@ function ApplyScholarship(props) {
       } 
       const answer = {
         answer: questions[i].answer,
-        isMandatory:questions[i].isMandatory,
         operationType: "U",
+        otherQuestionName:questions[i].otherQuestionName,
         questionDescription: questions[i].questionDescription,
         questionId: questions[i].questionId,
-        
+        scholarshipQuestionMappingId:questions[i].scholarshipQuestionMappingId
       };
       answers.push(answer);
     }  
     setConfirm(true)
   }
+
+  const addAbroadExperiance = () =>{
+    // console.log("endDate",endDate)
+    var End = endDate;
+    var Start = startDate;
+
+    if(!CheckOutlined){
+      setEndDate(new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate())
+    }
+    if(!checkStart){
+      setStartDate(new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate())
+    }
+    if(desc.length != 0)
+    if(desc.length <= 3000){
+    let data = [...finalAnswer]
+    let value = {
+      abroadExperienceDescription: desc,
+      abroadExperienceId:0,
+      experienceEndDate:endDate,
+      experienceStartDate:startDate,
+      operationType:"U"
+    }
+    data.push(value)
+    // console.log("data",data)
+
+    setFinalAnswer(data)
+    // console.log("finalAnswer",finalAnswer)
+    setChecked(false)
+    setStartDate("")
+    setEndDate("")
+    setDesc("")
+    setDescM(false);
+    } else {
+      setDescM(true);
+    }
+    // console.log("final",finalAnswer)
+  }
+  // console.log("final 1",finalAnswer)
+
 
   let history = useHistory();
   const avatar = userinfo.objectUrl;
@@ -173,7 +323,26 @@ function ApplyScholarship(props) {
   } = props.location.state;
   const baseUrl = process.env.REACT_APP_URL;
 
-  const applyScholarship = () => {  
+  const applyScholarship = () => {
+    // for (let i = 0; i < questions.length; i++) {
+    //   if (questions[i].answer.length == 0 || !questions[i].answer) {
+    //     setCheckAnswer(i);
+    //     return;
+    //   } else {
+    //     setCheckAnswer();
+    //   }
+    //   const answer = {
+    //     answer: questions[i].answer,
+    //     isMandatory:questions[i].isMandatory,
+    //     operationType: "U",
+    //     otherQuestionName:questions[i].otherQuestionName,
+    //     questionDescription: questions[i].questionDescription,
+    //     questionId: questions[i].questionId,
+    //     scholarshipQuestionMappingId:questions[i].scholarshipQuestionMappingId
+    //   };
+    //   answers.push(answer);
+    // }
+
     const body = {
       scholarshipId: scholarshipId,
       studentId: logindetails.userData.studentId,
@@ -203,6 +372,7 @@ function ApplyScholarship(props) {
       showRejectButton: true,
       showUnMarkButton: true,
       showViewButton: true,
+      studentAbroadExperienceDtos:finalAnswer
     };
     const config = {
       method: "post",
@@ -215,15 +385,17 @@ function ApplyScholarship(props) {
     axios(config)
       .then((res) => {
         // console.log(res.data.body);
-        setAnswers([]);
-        setOpenModal(true);
-        setModalmsg(res.data.message);
+        // setOpenModal(true);
+        // setModalmsg(res.data.message);
         setConfirm(false);
         props.enqueueSnackbar(res.data.message, {
           variant: res.data.status == 204 ? "warning" : "success",
         });
+        setAnswers([])
       })
       .catch((err) => {
+        setAnswers([])
+
         console.log(err);
         props.enqueueSnackbar("Something Went Wrong", {
           variant: "error",
@@ -244,10 +416,47 @@ function ApplyScholarship(props) {
     const values = [...questions];
     values[index].answer = e.target.value;
     setQuestions(values);
+    let valid = [...validation];
+    let word = e.target.value.split(" ");
+    if(e.target.value.length > 5000 || word.length > 300) {
+      valid[index] = true;
+    } else {
+      valid[index] = false;
+    }
+    setValidation(valid);
+    let wordCounter1 = [...wordCounter];
+    wordCounter1[index] = word.length;
+    let charecterCounter1 = [...charecterCounter];
+    charecterCounter1[index] = e.target.value.length;
+    setWordCounter(wordCounter1);
+    setCharecterCounter(charecterCounter1);
     // console.log(values[index]);
   };
 
-  var count = 0;
+
+  const handleChangeDate = (index, e, c) => {
+   
+    // const values = [...noOfOrganization];
+    // values[index][c] =
+    //   e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate();
+    // setNoOfOrganization(values);
+    //console.log(e);
+    if(e) {
+      if(c == "startDate"){
+        setStartDate(e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate());
+        setCheckStart(true)
+      }
+      else{
+        setEndDate(e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate());
+        setCheckEnd(true)
+      }
+  }
+  };
+
+  // const deleteExp = (id) => {
+  //   finalAnswer.splice(id,1)
+  // }
+  // var count = 0;
 // console.log("props.location.state",props.location.state)
   return (
     <div>
@@ -565,7 +774,7 @@ function ApplyScholarship(props) {
                 </div>
                 <div style={{ margin: "20px" }}>
                   <Typography variant="h6" component="h4">
-                    Professional Experience
+                    Proffesional Experiance
                   </Typography>
                   {userinfo.professionalExperienceList &&
                     userinfo.professionalExperienceList.map((exp, i) => {
@@ -657,7 +866,7 @@ function ApplyScholarship(props) {
                                 color: "grey",
                               }}
                             >
-                             {index + 1} : {question.questionDescription} {question.isMandatory==1 && <sup style={{ color: "red", marginLeft: "3px" }}>*</sup>}
+                             {index + 1} : {question.questionDescription == "Add custom question" ? question.otherQuestionName : question.questionDescription } {question.isMandatory==1 && <sup style={{ color: "red", marginLeft: "3px" }}>*</sup>}
                             </Typography>
                           </div>
                           <div>
@@ -675,11 +884,28 @@ function ApplyScholarship(props) {
                                 color: "grey",
                               }}
                             />
-                            {checkAnswer == index && question.answer.length == 0 &&(
+                            { 
+                            submitValid && ( question.answer ?
+                                   question.answer && question.answer.length == 0 &&(
                               <Typography style={{ color: "red" }}>
                                 This fields are mandatory
                               </Typography>
-                            )}
+                            ) : <Typography style={{ color: "red" }}>
+                            This fields are mandatory
+                          </Typography>)
+                            }
+                            { question.answer &&
+                              question.answer.length > 5000 &&
+                              <Typography style={{ color: "red" }}>
+                                Exceeding 5000 character 
+                              </Typography>
+                            } 
+                            {
+                              validation[index] &&
+                              <Typography style={{ color: "red" }}>
+                                Exceeding 5000 character and word from 250 to 300
+                              </Typography>
+                            }
                           </div>
                         </div>
                         </>
@@ -687,6 +913,172 @@ function ApplyScholarship(props) {
                     })
                   : ""}
             </CardContent>
+            {!finalAnswer.length == 0 && <div >
+              <hr></hr>
+              <Typography style={{marginLeft:"2%"}} variant="h5"> Abroad Experiance</Typography>
+              </div>}
+            {/* <hr></hr>
+            {finalAnswer && finalAnswer.length > 0 && finalAnswer.map((e) => {
+              <div>qwertyuiopgfhjkl</div>
+            })} */}
+            {finalAnswer && finalAnswer.map((e,index)=> {return(
+              <>
+              
+
+              <Card
+                className={classes.education__style}
+                raised
+                key={index}
+              >
+              <div style={{display:"flex", justifyContent:"space-between", flexDirection:"column"}}>
+                <div>
+                  <div className={classes.addEditDelete}>
+                    <Typography>
+                      <strong>
+                        Description : {e.abroadExperienceDescription}
+                      </strong>
+                    </Typography>
+                  </div>
+                  <div className={classes.addEditDelete}>
+                    <Typography>
+                      <strong>
+                        Start Date : {e.experienceStartDate}
+                      </strong>
+                    </Typography>
+                  </div>
+                  <div className={classes.addEditDelete}>
+                    <Typography>
+                      <strong>
+                        End Date : {e.experienceEndDate}
+                      </strong>
+                    </Typography>
+                  </div>
+                  {/* <div>
+                    <IconButton>
+                      <EditIcon/>
+                    </IconButton>
+                    <IconButton onClick={deleteExp(index)}>
+                      <DeleteIcon  />
+                    </IconButton>
+                  </div> */}
+                </div>
+                </div>
+                
+                
+                
+              </Card>
+              </>
+            )
+            } 
+            )}
+            <div style={{display: "flex", marginLeft:"2%"}} >
+            {/* <Checkbox
+              checked={checked}
+              onChange={()=>setChecked(true)}
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+            /> <Typography>Add Abroad Experiance</Typography> */}
+              <div>
+                <Button
+                  variant="contained"
+                  className={classes.rounding__edge}
+                  color={!checked ? "primary" : "secondary"}
+                  onClick={()=>setChecked(true)}
+                >
+                  {!checked ? <> + Add Abroad Experiance</> : <>Cancel</>}
+                </Button>
+              </div>
+            </div>
+            
+            <Dialog onClose={()=>{setChecked(false)}} aria-labelledby="customized-dialog-title" open={checked} >
+              <DialogTitleName id="customized-dialog-title" onClose={()=>{setChecked(false)}}>
+                Add Abroad Experiance
+              </DialogTitleName>
+              <DialogContentData dividers>
+                
+                <TextField id="standard-basic" label="Description" style={{width:"700px"}} value={desc} onChange={(e)=> setDesc(e.target.value)}/>
+                  {/* <TextField id="standard-basic"  fullWidth style={{width:"700px"}}/> */}
+                  {descM && <Typography style={{color:"red"}}> Exceeding 3000 character</Typography>}
+                  {desc.length ===  0 && <Typography style={{color:"red"}}> manditory field</Typography>}
+                  <MuiPickersUtilsProvider utils={DateFnsUtils} fullWidth>
+                      <Grid
+                        item
+                        xs={12}
+                        container
+                        style={{ padding: "20px 0px 20px 0px" }}
+                        
+                      >
+                  <Grid item xs={6}>
+                          <Grid container justify="space-around" item xs={12}>
+                            <KeyboardDatePicker
+                              fullWidth
+                              disableFuture
+                              disableToolbar
+                              // id="standard-basic"
+                              // maxDate={new Date()}
+                              variant="outline"
+                              label="Start Date"
+                              format="dd-MMM-yyyy"
+                              openTo="year"
+                              name="startDate"
+                              value={startDate}
+                              InputLabelProps={{ shrink: true }}
+                              onChange={(e) =>
+                                handleChangeDate(index, e, "startDate")
+                              }
+                              KeyboardButtonProps={{
+                                "aria-label": "change date",
+                              }}
+                            />
+                          </Grid>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={6}
+                          // style={
+                          //   organs.presentCompanyFlag
+                          //     ? { display: "none" }
+                          //     : { display: "block" }
+                          // }
+                        >
+                          <KeyboardDatePicker
+                            fullWidth
+                            // disableToolbar
+                            disableFuture
+                            //minDate={organs.startDate}
+                            InputLabelProps={{ shrink: true }}
+                            variant="outline"
+                            label="End Date"
+                            format="dd-MMM-yyyy"
+                            openTo="year"
+                            name="endDate"
+                            value={endDate}
+                            onChange={(e) =>
+                              handleChangeDate(index, e, "endDate")
+                            }
+                            KeyboardButtonProps={{
+                              "aria-label": "change date",
+                            }}
+                          />
+                        </Grid>
+                      {/* </Grid> */}
+                      
+                      </Grid>
+                    </MuiPickersUtilsProvider>
+                    <div style={{ display: "flex",justifyContent: "center"}}>
+                    <Button 
+                      variant="contained"
+                      color="primary"
+                      onClick={addAbroadExperiance}
+                      >Add
+                    </Button>
+                    </div>
+              </DialogContentData>
+              {/* <DialogActionsData>
+                <Button autoFocus onClick={handleClose} color="primary">
+                  Save changes
+                </Button>
+              </DialogActionsData> */}
+            </Dialog>
             <div className={classes.button_container}>
               <Button
                 variant="contained"

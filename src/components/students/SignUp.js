@@ -49,6 +49,8 @@ export default function SignUp() {
     //e.preventDefault();
     //console.log(fname, lname, email, password, roleName, roleId);
     // console.log("hi");
+    if(!errors.firstName && !errors.lastName && !errors.password && !errors.roleName) {
+      alert("Hi");
     const data = JSON.stringify({
       firstName: fname,
       lastName: lname,
@@ -83,6 +85,7 @@ export default function SignUp() {
         }
       })
       .catch((err) => console.log(err));
+    }
   };
   const handleChange = (event) => {
     setRoleName(event.target.value);

@@ -3,7 +3,14 @@ import Nav from "../Nav";
 import SideFilter from "./Discover/SideFilter";
 import DiscoverBody from "./Discover/DiscoverBody";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Grid, Hidden, IconButton } from "@material-ui/core";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Grid,
+  Hidden,
+  IconButton,
+} from "@material-ui/core";
 import axios from "axios";
 import { LoginContext } from "../../Context/LoginContext";
 import SimpleModal from "../atoms/Modal";
@@ -19,6 +26,10 @@ function Discover({ handleChange, ...props }) {
 
   useEffect(() => {
     handleChange("a", 3);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
     getScholarships(body, 1);
     logindetails.masterData.cityDtoList.forEach((element) => {
       Object.assign(element, { checked: false });
@@ -157,7 +168,7 @@ function Discover({ handleChange, ...props }) {
     });
     setcityChipsArr([]);
     setcountryChipsArr([]);
-    setLastDate("2029-12-31");
+    setLastDate("");
     setPage(1);
     setSearchWord("");
     // console.log("from clear all city--", cityDtoList);
@@ -404,7 +415,11 @@ function Discover({ handleChange, ...props }) {
 
     getScholarships(body, value);
     // console.log(value);
-    scrollToRef(myRef);
+    // scrollToRef(myRef);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const searchFieldChange = (e) => {
@@ -542,7 +557,7 @@ function Discover({ handleChange, ...props }) {
           </div>
         </Hidden> */}
         <div className={styles.body}>
-          <Hidden mdDown={!sidefilterDisplay}>
+          <Hidden mdDown>
             <div className={styles.sidefilter}>
               <SideFilter filter={sideFilter} />
             </div>
@@ -565,6 +580,21 @@ function Discover({ handleChange, ...props }) {
           />
         </div>
       </div>
+      <div className={styles.mobileFilter}>
+        <Accordion style={{ width: "100%", backgroundColor: "rgba(0,0,0,0)" }}>
+          <AccordionSummary>
+            <IconButton
+              style={{ backgroundColor: "#191d49" }}
+              onClick={() => setSidefilterDisplay(!sidefilterDisplay)}
+            >
+              <FilterListIcon style={{ fontSize: "40px", color: "white" }} />
+            </IconButton>
+          </AccordionSummary>
+          <AccordionDetails>
+            <SideFilter filter={sideFilter} />
+          </AccordionDetails>
+        </Accordion>
+      </div>
       {/* <Footer /> */}
     </>
   );
@@ -586,5 +616,13 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     display: "flex",
     justifyContent: "space-between",
+  },
+  mobileFilter: {
+    display: "none",
+    [theme.breakpoints.down("sm")]: {
+      display: "block",
+      position: "fixed",
+      bottom: "0",
+    },
   },
 }));

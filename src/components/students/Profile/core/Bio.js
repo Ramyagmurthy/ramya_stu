@@ -1,5 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Typography, Grid, paper, Paper, Button } from "@material-ui/core";
+import {
+  Typography,
+  Grid,
+  paper,
+  Paper,
+  Button,
+  Divider,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import FingerprintIcon from "@material-ui/icons/Fingerprint";
@@ -7,6 +14,7 @@ import { LoginContext } from "../../../../Context/LoginContext";
 import axios from "axios";
 import SimpleModal from "../../../../components/atoms/Modal";
 import { withSnackbar } from "notistack";
+import upload from "../../../../assets/img/upload.png";
 
 function Bio(props) {
   const classes = useStyles();
@@ -16,10 +24,13 @@ function Bio(props) {
 
   const url = `${baseUrl}/master/get-master-data`;
   const [questions, setQuestions] = useState(
-    logindetails.masterData.behaviouralQuestionsDtoList.filter((e)=>e.isMandatory == 1)
+    logindetails.masterData.behaviouralQuestionsDtoList.filter(
+      (e) => e.isMandatory == 1
+    )
   );
   const [checkAnswer, setCheckAnswer] = useState();
   const [index, setIndex] = useState();
+  const [submitValid, setSubmitValid] = useState(false);
 
   useEffect(() => {
     getUserInfo(logindetails.userData.userId);
@@ -40,7 +51,9 @@ function Bio(props) {
   const [answers, setAnswers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [modalmsg, setModalmsg] = useState("");
-  const [length, setLength] = useState(false);
+  const [validation, setValidation] = useState([]);
+  const [wordCounter, setWordCounter] = useState([]);
+  const [charecterCounter, setCharecterCounter] = useState([]);
 
   const handleSubmit = (e) => {
     // if(fname.length == 0 || !fname ||lname.length == 0 || !lname || address.length == 0 || !address){
@@ -50,14 +63,17 @@ function Bio(props) {
     // else{
     //   setCheckFname(false)
     // }
-
+    setSubmitValid(true);
     for (let i = 0; i < questions.length; i++) {
       let word = questions[i].answer.split(" ");
-     //console.log(word.length);
-      if (word.length < 251 || 
-          word.length > 301 || 
-          questions[i].answer.length > 5000 || 
-          !questions[i].answer) {
+      //console.log(word.length);
+      if (
+        word.length < 251 ||
+        word.length > 301 ||
+        questions[i].answer.length > 5000 ||
+        questions[i].answer.length == 0 ||
+        !questions[i].answer
+      ) {
         setCheckAnswer(i);
         return;
       } else {
@@ -65,15 +81,13 @@ function Bio(props) {
       }
       const answer = {
         answer: questions[i].answer,
-        isMandatory:questions[i].isMandatory,
+        isMandatory: questions[i].isMandatory,
         operationType: "U",
         questionDescription: questions[i].questionDescription,
         questionId: questions[i].questionId,
-        
       };
       answers.push(answer);
     }
-
 
     let body = {
       questionDetails: answers,
@@ -109,92 +123,176 @@ function Bio(props) {
       });
   };
   const answerschange = (e, index) => {
-    // console.log(e);
     setIndex(index);
     const values = [...questions];
     values[index].answer = e.target.value;
-    console.log(values[index].answer.length);
     setQuestions(values);
+    let valid = [...validation];
+    let word = e.target.value.split(" ");
+    if (e.target.value.length > 5000 || word.length > 300) {
+      valid[index] = true;
+    } else {
+      valid[index] = false;
+    }
+    setValidation(valid);
+    let wordCounter1 = [...wordCounter];
+    wordCounter1[index] = word.length;
+    let charecterCounter1 = [...charecterCounter];
+    charecterCounter1[index] = e.target.value.length;
+    setWordCounter(wordCounter1);
+    setCharecterCounter(charecterCounter1);
 
+    // console.log(values[index]);
   };
   // console.log("questions",questions)
 
-  var count = 0
+  var count = 0;
   return (
-    <Paper elevattion={3} className={classes.main}>
+    <>
+      <div className="bio__buttons">
+        <div className="cancel__btn" type="button">
+          CANCEL
+        </div>
+        <div className="save__btn " type="button" onClick={handleSubmit}>
+          SUBMIT
+        </div>
+      </div>
+
       <SimpleModal
         //openModal={openModal}
         setOpenModal={setOpenModal}
         modalmsg={modalmsg}
       />
-      <div className={classes.headerTile}>
-        <Typography variant="h4">Bio</Typography>
-        <FingerprintIcon />
-      </div>
-      <div style={{textAlign: "center"}}>(You can enter minimum of 250 - 300 words and maximum 5000 characters)</div>
-      <Grid xs={12} container>
+      <div className="bio__container">
+        {/* <div className={classes.headerTile}>
+          <Typography variant="h4">Bio</Typography>
+          <FingerprintIcon />
+        </div> 
+         <div style={{ textAlign: "center" }}>
+          (You can enter minimum of 250 - 300 words and maximum 5000 characters)
+        </div> */}
         {questions
           ? questions.map((question, index) => {
-              if(question.isMandatory == 1){
+              if (question.isMandatory == 1) {
                 count++;
               }
               return (
                 <>
-                
-                <Grid Container key={index} style={{ width: "100%" }}>
-                  <Grid item xs={12} sm={12}>
-                    <Typography
-                      fullWidth
-                      variant="h5"
+                  <div className="container bg_blue p-5 mt-5 mb-5 small__nopadding">
+                    <div className="bio__questions">
+                      {index + 1}. {question.questionDescription}
+                    </div>
+                    <div className="mt-3">
+                      {/* <div className="row justify-content-center mt-3">
+                          <div className="upload__video mt-2">Upload Video</div>
+                        </div>
+                        <p className="text_light mx-auto d-block">
+                          Click On The Video Upload Button to Upload Video
+                          Answer
+                        </p> */}
+                      {/* <div className="upload-btn-wrapper mx-auto d-block mt-3 mb-5">
+                          <label htmlFor={question.questionDescription}>
+                            <div className="upload__button" type="button">
+                              <img src={upload} className="upload__icon" />{" "}
+                              UPLOAD VIDEO
+                            </div>
+                          </label>
+                          <input
+                            type="file"
+                            name="myfile"
+                            id={question.questionDescription}
+                            style={{ display: "none" }}
+                          />
+                        </div> */}
+                      <textarea
+                        type="text"
+                        rows="20"
+                        value={question.answer}
+                        onChange={(e) => answerschange(e, index)}
+                        placeholder="Please write your answer here"
+                        className="bio__answer no_border form-control"
+                      />
+                    </div>
+                    <div
                       style={{
-                        width: "100%",
-                        paddingTop: "16px",
-                        color: "grey",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        fontSize: "12px",
+                        margin: "8px 5px 0px 5px",
                       }}
                     >
-                      {question.questionDescription}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      multiline
-                      value={question.answer}
-                      // name={question.questionTypeDto.questionTypeName}
-                      onChange={((e) => answerschange(e, index))}
-                      placeholder="Please write your answer here"
-                      style={{
-                        width: "100%",
-                        padding: "16px 0 16px 0",
-                        color: "grey",
-                      }}
-                    />
-                    {checkAnswer == index && (
-                      <Typography style={{ color: "red" }}>
-                        Enter 250-300 words and maximum 5000 characters
-                      </Typography>
+                      <div
+                        style={
+                          charecterCounter[index] &&
+                          charecterCounter[index] > 5000
+                            ? { color: "red" }
+                            : { color: "#818181" }
+                        }
+                      >
+                        {charecterCounter[index]
+                          ? `${charecterCounter[index]} / 5000`
+                          : "max Characters: 5000"}
+                      </div>
+                      <div
+                        style={
+                          wordCounter[index] && wordCounter[index] < 250
+                            ? { color: "red" }
+                            : { color: "#818181" }
+                        }
+                      >
+                        {wordCounter[index]
+                          ? `${wordCounter[index]} / 250`
+                          : "min Words: 250"}
+                      </div>
+                    </div>
+
+                    {submitValid &&
+                      (question.answer ? (
+                        question.answer.length === 0 && (
+                          <Typography style={{ color: "red" }}>
+                            Enter the answer
+                          </Typography>
+                        )
+                      ) : (
+                        <Typography style={{ color: "red" }}>
+                          Enter the answer
+                        </Typography>
+                      ))}
+                    {validation[index] && !(wordCounter[index] < 251) && (
+                      <>
+                        <Typography style={{ color: "red" }}>
+                          *
+                          {/* Exceeding 5000 character and word from 250 to 300 */}
+                        </Typography>
+                        {/* <Typography style={{ color: "black" }}>
+                            Word Count : {wordCounter[index]}, Charecter Count :{" "}
+                            {charecterCounter[index]}
+                          </Typography> */}
+                      </>
                     )}
-                    
-                  </Grid>
-                </Grid>
+                    {/* {submitValid && wordCounter[index] < 251 && (
+                        <Typography style={{ color: "red" }}>
+                          word is less than 250
+                        </Typography>
+                      )} */}
+                  </div>
                 </>
               );
             })
           : ""}
-      </Grid>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        fullWidth
-        className={classes.submit}
-        style={{ marginTop: "60px" }}
-        disabled={count > 0 ? false:true}
-      >
-        save Answers
-      </Button>
-    </Paper>
+        {/* <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          fullWidth
+          className={classes.submit}
+          style={{ marginTop: "60px" }}
+          disabled={count > 0 ? false : true}
+        >
+          save Answers
+        </Button> */}
+      </div>
+    </>
   );
 }
 

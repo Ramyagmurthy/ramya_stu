@@ -32,7 +32,7 @@ export default function DiscoverCard({ values }) {
         setOpenModal={setOpenModal}
         modalmsg={modalmsg}
       />
-      <Card style={{ borderRadius: "16px"}}  className={classes.main_card}>
+      <Card style={{ borderRadius: "16px" }} className={classes.main_card}>
         <Accordion>
           <div className={classes.details}>
             <CardMedia
@@ -41,7 +41,7 @@ export default function DiscoverCard({ values }) {
               title={values.scholarshipName}
             />
             <CardContent className={classes.content}>
-              <div>
+              <div className={classes.middle__summary}>
                 <Typography className={classes.heading__card}>
                   {values.scholarshipName}
                 </Typography>
@@ -76,13 +76,7 @@ export default function DiscoverCard({ values }) {
                   <b>Studost :</b> {values.benefactorName}
                 </Typography>
               </div>
-              {/* <Typography
-                variant="subtitle1"
-                color="textSecondary"
-                className={classes.amount}
-              >
-                <b>Fund Amount : Rs {values.amount}</b>
-              </Typography> */}
+
               <AccordionSummary
                 aria-controls="panel1a-content"
                 id="panel1a-header"
@@ -99,22 +93,20 @@ export default function DiscoverCard({ values }) {
             </CardContent>
           </div>
           <AccordionDetails>
-            <div>
+            <div style={{ width: "100%" }}>
               <div className={classes.details__accordian}>
                 <Typography className={classes.details__title}>
                   Status
                 </Typography>
 
-                <Typography style={{ marginRight: "10px", marginLeft: "10px" }}>
-                  : {values.scholarshipStatusDto.name}
-                </Typography>
+                <Typography>: {values.scholarshipStatusDto.name}</Typography>
               </div>
               <div className={classes.details__accordian}>
                 <Typography className={classes.details__title}>
                   Studost
                 </Typography>
 
-                <Typography style={{ marginRight: "10px", marginLeft: "10px" }}>
+                <Typography className={classes.details__value}>
                   : {values.benefactorName}
                 </Typography>
               </div>
@@ -123,7 +115,7 @@ export default function DiscoverCard({ values }) {
                   Scholarships
                 </Typography>
 
-                <Typography style={{ marginRight: "10px", marginLeft: "10px" }}>
+                <Typography className={classes.details__value}>
                   : {values.numberOfScholarshipsAvailable}
                 </Typography>
               </div>
@@ -131,7 +123,7 @@ export default function DiscoverCard({ values }) {
                 <Typography className={classes.details__title}>For</Typography>
                 {values.genderDtoSet ? (
                   values.genderDtoSet.map((opt, i) => (
-                    <Typography style={{ marginLeft: "10px" }} key={i}>
+                    <Typography key={i}>
                       {i === 0 ? ": " : ""} {opt.name}{" "}
                       {i !== values.genderDtoSet.length - 1 ? "," : "."}
                     </Typography>
@@ -159,7 +151,7 @@ export default function DiscoverCard({ values }) {
                 </Typography>
                 {values.countryDtoSet
                   ? values.countryDtoSet.map((opt, i) => (
-                      <Typography style={{ marginLeft: "10px" }} key={i}>
+                      <Typography key={i}>
                         {i === 0 ? ": " : ""} {opt.name}{" "}
                         {i !== values.countryDtoSet.length - 1 ? "," : "."}
                       </Typography>
@@ -173,20 +165,23 @@ export default function DiscoverCard({ values }) {
                 </Typography>
                 {values.institutionDtoSet
                   ? values.institutionDtoSet.map((opt, i) => (
-                      <Typography style={{ marginLeft: "10px" }} key={i}>
+                      <Typography key={i} className={classes.details__value}>
                         {i === 0 ? ": " : ""} {opt.name}{" "}
                         {i !== values.institutionDtoSet.length - 1 ? "," : "."}
                       </Typography>
                     ))
                   : null}
               </div>
-              <div className={classes.details__accordian}>
+              <div
+                className={classes.details__accordian}
+                style={{ display: "none" }}
+              >
                 <Typography className={classes.details__title}>
                   Rounds
                 </Typography>
                 {values.selectionProcessRoundSet ? (
                   values.selectionProcessRoundSet.map((opt, i) => (
-                    <Typography style={{ marginLeft: "10px" }} key={i}>
+                    <Typography key={i}>
                       {i === 0 ? ": " : ""} {opt.name}{" "}
                       {i !== values.selectionProcessRoundSet.length - 1
                         ? ","
@@ -203,7 +198,7 @@ export default function DiscoverCard({ values }) {
                 </Typography>
                 {values.studyFieldDtoSet ? (
                   values.studyFieldDtoSet.map((opt, i) => (
-                    <Typography style={{ marginLeft: "10px" }} key={i}>
+                    <Typography key={i} className={classes.details__value}>
                       {i === 0 ? ": " : ""} {opt.name}{" "}
                       {i !== values.studyFieldDtoSet.length - 1 ? "," : "."}
                     </Typography>
@@ -212,28 +207,13 @@ export default function DiscoverCard({ values }) {
                   <Typography>Any</Typography>
                 )}
               </div>
-              {/*<div className={classes.details__accordian}>
-                 <Typography className={classes.details__title}>
-                  Degree :
-                </Typography>
-                {values.selectionProcessRoundSet ? (
-                  values.selectionProcessRoundSet.degreeDtoSet.map((opt) => (
-                    <Typography
-                      style={{ marginRight: "10px", marginLeft: "10px" }}
-                    >
-                      {opt.name}
-                    </Typography>
-                  ))
-                ) : (
-                  <Typography>Any</Typography>
-                )} 
-              </div>*/}
+
               <div className={classes.details__accordian}>
                 <Typography className={classes.details__title}>
                   Ideal Candidate
                 </Typography>
 
-                <Typography style={{ marginRight: "10px", marginLeft: "10px" }}>
+                <Typography className={classes.details__value}>
                   : {values.scholarshipIdealCandidateDescription}
                 </Typography>
               </div>
@@ -242,7 +222,7 @@ export default function DiscoverCard({ values }) {
                   Creation Date
                 </Typography>
 
-                <Typography style={{ marginRight: "10px", marginLeft: "10px" }}>
+                <Typography className={classes.details__value}>
                   : {values.scholarshipCreationDate}
                 </Typography>
               </div>
@@ -251,7 +231,7 @@ export default function DiscoverCard({ values }) {
                   Last Date
                 </Typography>
 
-                <Typography style={{ marginRight: "10px", marginLeft: "10px" }}>
+                <Typography className={classes.details__value}>
                   : {values.lastDateToApply}
                 </Typography>
               </div>
@@ -275,7 +255,6 @@ export default function DiscoverCard({ values }) {
                 disabled={!values.canApplyFlag}
               >
                 {values.canApplyFlag ? <>Apply</> : <> Already Applied</>}
-                {/* Apply */}
               </Button>
             </div>
           </Link>
@@ -305,7 +284,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     // border: "2px solid red",
     justifyContent: "space-between",
-    
+    [theme.breakpoints.down("md")]: {
+      flexDirection: "column",
+    },
   },
   cover: {
     width: 320,
@@ -353,17 +334,23 @@ const useStyles = makeStyles((theme) => ({
   details__accordian: {
     display: "flex",
     marginTop: "10px",
-    backgroundColor: "#E8E8E8",
+    backgroundColor: "#f1f2f5",
     paddingBottom: "5px",
     paddingTop: "5px",
-    paddingLeft: "5px",
     borderRadius: "8px",
-    marginLeft: "10px",
-    marginRight: "10px",
+    overflow: "cliped",
     width: "100%",
+    paddingLeft: "16px",
+    [theme.breakpoints.down("md")]: {
+      flexDirection: "column",
+    },
   },
   details__title: {
     minWidth: "150px",
+    fontWeight: "bold",
+    [theme.breakpoints.down("md")]: {
+      minWidth: "0px",
+    },
   },
   apply__button: {
     margin: theme.spacing(2),
@@ -375,7 +362,21 @@ const useStyles = makeStyles((theme) => ({
   },
   main_card: {
     [theme.breakpoints.down("md")]: {
-      minWidth: "99%"
+      width: "90%",
+      border: "2px solid grey",
+      marginLeft: "auto",
+      marginRight: "auto",
+    },
+  },
+  details__value: {
+    [theme.breakpoints.down("md")]: {
+      width: "auto",
+    },
+  },
+  middle__summary: {
+    maxWidth: "60%",
+    [theme.breakpoints.down("md")]: {
+      maxWidth: "100%",
     },
   },
 }));

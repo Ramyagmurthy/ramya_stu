@@ -27,43 +27,18 @@ import Login from "./../components/students/LoginPage";
 import BenifactoreSignUp from "./../components/benefactors/BenifactoreSignUp";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import VideoModal from "../components/atoms/VideoModal";
+import Navbar from "../StaticPageComponents/StaticNavBar";
 
 const LandingView = () => {
-  const [logoWidth, setlogoWidth] = useState(160);
-  const matches = useMediaQuery("(min-width:600px)");
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
 
-  const [cssStyle, setCssStyle] = useState(
-    "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-  );
   const [loginStatus, setLoginStatus] = useState(false);
   const [benifatorStatus, setBenifatorStatus] = useState(false);
-
-  useEffect(() => {
-    if (!matches) {
-      setlogoWidth(100);
-    }
-    // console.log(window.scrollY);
-    document.addEventListener("scroll", () => {
-      if (window.scrollY < 100)
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-        );
-      else
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-        );
-    });
-  }, [window.scrollY]);
-
-  const changeNav = () => {
-    if (cssStyle != "navbar navbar-expand-lg navbar-dark fixed-top bg-theme") {
-      setCssStyle("navbar navbar-expand-lg navbar-dark fixed-top bg-theme");
-    } else {
-      setCssStyle(
-        "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-      );
-    }
-  };
 
   // modal video logic
   const [videopen, setVidOpen] = useState(false);
@@ -72,77 +47,13 @@ const LandingView = () => {
     setVidOpen(true);
     setVideoSrc(e);
   };
-
   return (
     <>
+      <Navbar value={"home"} />
       {loginStatus && <Login setLoginStatus={setLoginStatus} />}
       {benifatorStatus && (
         <BenifactoreSignUp setBenifatorStatus={setBenifatorStatus} />
       )}
-      <nav className={cssStyle}>
-        <div className="container">
-          <a className="navbar-brand" href="/">
-            <img className="logo" src={image1} width={logoWidth} alt="logo" />
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-            onClick={changeNav}
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item active">
-                <a className="nav-link" href="/">
-                  Home
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="about">
-                  About Us
-                </a>
-              </li>
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  data-toggle="dropdown"
-                  href="#"
-                >
-                  How It Works
-                </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <a href="student">Find a Scholarship</a>
-                  </li>
-                  <li>
-                    <a href="findscholar">Find a Scholar</a>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="contactus">
-                  Contact Us
-                </a>
-              </li>
-            </ul>
-            <div
-              className="btn"
-              onClick={() => {
-                setLoginStatus(true);
-                // history.push("homecontrol/home");
-              }}
-            >
-              LOGIN
-            </div>
-          </div>
-        </div>
-      </nav>
 
       {/* slide */}
 
@@ -200,13 +111,11 @@ const LandingView = () => {
                 Access unique funding and mentorship opportunities to unlock the
                 next stage of your journey
               </p>
-              <a
-                className="btn top-padd"
-                href="student"
-                style={{ marginBottom: "8%" }}
-              >
-                LEARN MORE
-              </a>
+              <Link to="/student" style={{ textDecoration: "none" }}>
+                <a className="btn top-padd" style={{ marginBottom: "8%" }}>
+                  LEARN MORE
+                </a>
+              </Link>
             </div>
           </div>
           <div className="carousel-item">
@@ -220,13 +129,11 @@ const LandingView = () => {
               <p className="subtext">
                 Inspire and support students to achieve their full potential
               </p>
-              <a
-                className="btn"
-                href="findscholar"
-                style={{ marginBottom: "15%" }}
-              >
-                KNOW MORE
-              </a>
+              <Link to="/findscholar" style={{ textDecoration: "none" }}>
+                <a className="btn" style={{ marginBottom: "15%" }}>
+                  KNOW MORE
+                </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -246,9 +153,9 @@ const LandingView = () => {
               We believe in the power of big dreams. We want to empower students
               to take a step closer to their goals and learn without limits.
             </div>
-            <a className="btn" href="about">
-              ABOUT US
-            </a>
+            <Link to="/about" style={{ textDecoration: "none" }}>
+              <a className="btn">ABOUT US</a>
+            </Link>
           </div>
           <div className="col-12 col-lg-6 mt-25 text-center">
             <img src={image4} width="100%" />
@@ -282,14 +189,6 @@ const LandingView = () => {
             <div className="carousel-item active">
               <div className="row">
                 <div className="col-6 col-lg-3 hideSmall">
-                  {/* <div
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      backgroundColor: "rgba(255,255,255,0.4)",
-                    }}
-                  /> */}
                   <div className="student-block">
                     <img
                       src={image12}
@@ -405,26 +304,12 @@ const LandingView = () => {
                     }
                   >
                     <img src={image12} width="100%" className="videoheight" />
-                    {/* <video
-                      src="https://studost-prod-bucket.s3.ap-south-1.amazonaws.com/STUDOST_FRONT_END_VIDEO/Divya+Goyal_video.mov"
-                      height="100%"
-                      width="100%"
-                      autoPlay={false}
-                      controls={true}
-                      loop={true}
-                      className="videoheight"
-                    /> */}
+
                     <div className="name">Divya Goyal</div>
                     <div className="age">21yrs old</div>
                     <div className="text">
                       Improving the systems that ignored her disability
                     </div>
-                    {/* <div className="name">Neha Verma</div>
-                    <div className="age">22yrs old</div>
-                    <div className="text">
-                      Working for a hunger-free Jharkhand through empathetic
-                      policymaking
-                    </div> */}
                   </div>
                 </div>
                 <div className="col-6 col-lg-3">
@@ -469,154 +354,6 @@ const LandingView = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="student-block">
-                    <img
-                      src={anaha}
-                      width="100%"
-                      className="videoheight"
-                      style={{ width: "100%", objectFit: "cover" }}
-                    />
-
-                    <div className="name">Anah Bagdadi</div>
-                    <div className="age">21yrs old</div>
-                    <div className="text"></div>
-                  </div> */}
-
-                {/* <div className="col-6 col-lg-3">
-                  <div
-                    className="student-block"
-                    data-toggle="modal"
-                    data-target="#student1"
-                  >
-                    <img src={image6} width="100%" />
-                    <div className="name">Jigyasa Labroo</div>
-                    <div className="age">22yrs old</div>
-                    <div className="text">
-                      Helping every child in India find their voice
-                    </div>
-                  </div>
-                </div> */}
-              </div>
-            </div>
-            <div className="carousel-item">
-              <div className="row">
-                <div className="col-6 col-lg-3 hideSmall">
-                  <div
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      backgroundColor: "rgba(255,255,255,0.4)",
-                    }}
-                  />
-                  <div className="student-block">
-                    <img
-                      src={image6}
-                      style={{ width: "100%", objectFit: "cover" }}
-                      className="videoheight"
-                    />
-
-                    {/* <video
-                      src="https://studost-prod-bucket.s3.ap-south-1.amazonaws.com/STUDOST_FRONT_END_VIDEO/Divya+Goyal_video.MOV"
-                      height="100%"
-                      width="100%"
-                      autoPlay={false}
-                      controls={true}
-                      
-                      loop={true}
-                      className="videoheight"
-                    /> */}
-
-                    <div className="name">Jigyasa Labroo</div>
-                    <div className="age">22yrs old</div>
-                    <div className="text">
-                      Helping every child in India find their voice
-                    </div>
-                  </div>
-                </div>
-                {/* <div className="col-6 col-lg-3">
-                  <div
-                    className="student-block"
-                    // data-toggle="modal"
-                    // data-target="#student1"
-                  >
-                     <img src="assets/images/Stu4.png" width="100%" /> 
-                    <video
-                      src="https://studost-prod-bucket.s3.ap-south-1.amazonaws.com/STUDOST_FRONT_END_VIDEO/VID-20210410-WA0013.mp4"
-                      height="100%"
-                      width="100%"
-                      autoPlay={false}
-                      controls={true}
-                      loop={true}
-                      className="videoheight"
-                    />
-
-                    <div className="name">Anah Bagdadi</div>
-                    <div className="age">21yrs old</div>
-                    <div className="text">
-                    Lorem Ipsum is simply dummy text of the printing and
-                      typesetting industry. 
-                    </div>
-                  </div>
-                </div> */}
-                {/* <div className="col-6 col-lg-3">
-                  <div
-                    className="student-block"
-                    data-toggle="modal"
-                    data-target="#student2"
-                  >
-                     <img src={image7} width="100%" /> 
-                    <video
-                      src="https://studost-prod-bucket.s3.ap-south-1.amazonaws.com/STUDOST_FRONT_END_VIDEO/Video_20210421221607980_by_Filmigo_2.mp4"
-                      height="100%"
-                      width="100%"
-                      autoPlay={false}
-                      controls={true}
-                      loop={true}
-                      className="videoheight"
-                    />
-                    <div className="name">Neha Verma </div>
-                    <div className="age">22yrs old</div>
-                    <div className="text">
-                       Diminishing inequalities in the social strata of India 
-                    </div>
-                  </div>
-                </div> */}
-                {/* <div className="col-6 col-lg-3 hideSmall">
-                  <div
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      backgroundColor: "rgba(255,255,255,0.4)",
-                    }}
-                  /> */}
-                {/* <div className="student-block">
-                    <img
-                      src={image13}
-                      width="100%"
-                      className="videoheight"
-                      style={{ width: "100%", objectFit: "cover" }}
-                    />
-                     <video
-                      src="https://studost-prod-bucket.s3.ap-south-1.amazonaws.com/STUDOST_FRONT_END_VIDEO/Studost_Pitch_Pius_FINAL.mp4"
-                      height="100%"
-                      width="100%"
-                      autoPlay={false}
-                      controls={true}
-                      
-                      loop={true}
-                      className="videoheight"
-                    /> 
-
-                    <div className="name">Ganita Dahiya </div>
-                    <div className="age">25yrs old</div>
-                    <div className="text">
-                      Diminishing inequalities in the social strata of India
-                    </div>
-                  </div> */}
-                {/* </div> */}
               </div>
             </div>
           </div>
@@ -630,9 +367,9 @@ const LandingView = () => {
           </ol>
         </div>
         <div className="col-12 col-lg-12 text-center">
-          <a href="student" className="btn mt-25">
-            Find a scholarship
-          </a>
+          <Link to="/student">
+            <a className="btn mt-25">Find a Fund</a>
+          </Link>
         </div>
       </div>
 
@@ -655,9 +392,9 @@ const LandingView = () => {
               Help students gain a high-quality education by supporting their
               dreams and removing barriers to improve their access.
             </div>
-            <a href="findscholar" className="btn">
-              Find a Scholar
-            </a>
+            <Link to="/findscholar">
+              <a className="btn">Find a Scholar</a>
+            </Link>
           </div>
           <div className="col-12 col-lg-7 mt-25 text-center">
             <div
@@ -668,8 +405,11 @@ const LandingView = () => {
             >
               <div className="carousel-inner text-left ">
                 <div className="carousel-item active">
-                  <div className="row negative2">
-                    <div className="col-6 col-lg-6">
+                  <div
+                    className="row negative2"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    {/* <div className="col-6 col-lg-6">
                       <div className="student-block two heightstudostcard">
                         <img
                           className="studost_img"
@@ -680,8 +420,8 @@ const LandingView = () => {
                         <div className="text">Parivartan Fund</div>
                         <span className="amount_tag">₹ &nbsp; 10 Lakhs</span>
                       </div>
-                    </div>
-                    <div className="col-6 col-lg-6">
+                    </div> */}
+                    <div className="col-12 col-lg-6">
                       <div className="student-block two heightstudostcard">
                         <img
                           className="studost_img"
@@ -690,15 +430,18 @@ const LandingView = () => {
                         />
                         <div className="name">Manish Maheshwari</div>
                         <span className="amount_tag">₹ &nbsp;15 Lakhs</span>
-                        <div className="text">Law Fund</div>
+                        <div className="text">Santosh Fund</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="carousel-item">
-                  <div className="row negative2">
-                    <div className="col-6 col-lg-6">
+                  <div
+                    className="row negative2"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    {/* <div className="col-6 col-lg-6">
                       <div className="student-block two heightstudostcard">
                         <img
                           className="studost_img"
@@ -709,8 +452,8 @@ const LandingView = () => {
                         <div className="text">Parivartan Fund</div>
                         <span className="amount_tag">₹ &nbsp; 10 Lakhs</span>
                       </div>
-                    </div>
-                    <div className="col-6 col-lg-6">
+                    </div> */}
+                    <div className="col-12 col-lg-6">
                       <div className="student-block two heightstudostcard">
                         <img
                           className="studost_img"
@@ -719,15 +462,18 @@ const LandingView = () => {
                         />
                         <div className="name">Manish Maheshwari</div>
                         <span className="amount_tag">₹ &nbsp;15 Lakhs</span>
-                        <div className="text">Law Fund</div>
+                        <div className="text">Santosh Fund</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="carousel-item">
-                  <div className="row negative2">
-                    <div className="col-6 col-lg-6">
+                  <div
+                    className="row negative2"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    {/* <div className="col-6 col-lg-6">
                       <div className="student-block two heightstudostcard">
                         <img
                           className="studost_img"
@@ -738,8 +484,8 @@ const LandingView = () => {
                         <div className="text">Parivartan Fund</div>
                         <span className="amount_tag">₹ &nbsp; 10 Lakhs</span>
                       </div>
-                    </div>
-                    <div className="col-6 col-lg-6">
+                    </div> */}
+                    <div className="col-12 col-lg-6">
                       <div className="student-block two heightstudostcard">
                         <img
                           className="studost_img"
@@ -748,7 +494,7 @@ const LandingView = () => {
                         />
                         <div className="name">Manish Maheshwari</div>
                         <span className="amount_tag">₹ &nbsp;15 Lakhs</span>
-                        <div className="text">Law Fund</div>
+                        <div className="text">Santosh Fund</div>
                       </div>
                     </div>
                   </div>
@@ -768,7 +514,6 @@ const LandingView = () => {
         </div>
       </div>
 
-      <Footer />
       <VideoModal
         videopen={videopen}
         setVidOpen={setVidOpen}

@@ -6,21 +6,17 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LoginContext } from "../../../../../Context/LoginContext";
 import SimpleModal from "../../../../atoms/Modal";
 
-const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
+const AllApplicants = ({ values, scholarshipId, getapplicantscount }) => {
   const baseUrl = process.env.REACT_APP_URL;
   // const baseUrl = "http://studost.devkraft.in/studost/api"
 
   const [applicantdata, setApplicantdata] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
-  const [
-    showSubmitForNextRoundButton,
-    setShowSubmitForNextRoundButton,
-  ] = useState(false);
-  const [
-    showGoToPreviousStageButton,
-    setShowGoToPreviousStageButton,
-  ] = useState(false);
+  const [showSubmitForNextRoundButton, setShowSubmitForNextRoundButton] =
+    useState(false);
+  const [showGoToPreviousStageButton, setShowGoToPreviousStageButton] =
+    useState(false);
   const [showGoToNextStageButton, setShowGoToNextStageButton] = useState(false);
   const [submitButtonText, setSubmitButtonText] = useState(false);
   const [nextButton, setNextButton] = useState("");
@@ -29,6 +25,8 @@ const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
   const [openModal, setOpenModal] = useState(false);
   const [modalmsg, setModalmsg] = useState("");
   const [modalvariation, setModalvariation] = useState("success");
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("");
 
   const logindetails = useContext(LoginContext);
 
@@ -58,6 +56,12 @@ const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
 
     axios(config)
       .then((res) => {
+        setName(res.data.body.scholarshipDto.scholarshipName);
+        setStatus(res.data.body.scholarshipDto.scholarshipStatusDto.label);
+        setShowGoToNextStageButton(res.data.body.showGoToNextStageButton);
+        setSubmitButtonText(res.data.body.submitButtonText);
+        setNextButton(res.data.body.nextStageButtonText);
+        setPreviousButton(res.data.body.previousStageButtonText);
         setApplicantdata(res.data.body.applicationList);
         setIsLoading(true);
         setShowSubmitForNextRoundButton(
@@ -66,10 +70,6 @@ const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
         setShowGoToPreviousStageButton(
           res.data.body.showGoToPreviousStageButton
         );
-        setShowGoToNextStageButton(res.data.body.showGoToNextStageButton);
-        setSubmitButtonText(res.data.body.submitButtonText);
-        setNextButton(res.data.body.nextStageButtonText);
-        setPreviousButton(res.data.body.previousStageButtonText);
         if (res.data.body.applicationList.length == 0) {
           setIsEmpty(true);
         }
@@ -79,24 +79,32 @@ const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
 
   const submitForNextRoundButton = () => {
     // console.log("caught")
-    // const body = {
-    //   loginUserId:logindetails.userData.userId,
-    //   scholarshipId: scholarshipId,
-    // };
+    const body = {
+      loginUserId: logindetails.userData.userId,
+      scholarshipId: scholarshipId,
+    };
     const config = {
       method: "post",
-      url: `${baseUrl}/application/submit-shortlisted-applications?loginUserId=${logindetails.userData.userId}&scholarshipId=${scholarshipId}`,
+      url: `${baseUrl}/application/submit-shortlisted-applications`,
       headers: {
         "Content-Type": "application/json",
       },
-      // data: body,
+      data: body,
     };
 
     axios(config)
       .then((res) => {
-        setOpenModal(true);
-        setModalmsg(res.data.message);
+        if (res.data.status == 200) {
+          setOpenModal(true);
+          setModalmsg(res.data.message);
+          setModalvariation("success");
+        } else if (res.data.status == 204 || res.data.status == 500) {
+          setOpenModal(true);
+          setModalmsg(res.data.message);
+          setModalvariation("warning");
+        }
         getapplicantscount(scholarshipId);
+        getapplicants();
         // console.log("qwertyu",res.data.body)
       })
       .catch((err) => console.log(err));
@@ -109,18 +117,26 @@ const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
     };
     const config = {
       method: "post",
-      url: `${baseUrl}/scholarship/go-to-previous-stage?loginUserId=${logindetails.userData.userId}&scholarshipId=${scholarshipId}`,
+      url: `${baseUrl}/scholarship/go-to-previous-stage`,
       headers: {
         "Content-Type": "application/json",
       },
-      // data: body,
+      data: body,
     };
 
     axios(config)
       .then((res) => {
-        setOpenModal(true);
-        setModalmsg(res.data.message);
+        if (res.data.status == 200) {
+          setOpenModal(true);
+          setModalmsg(res.data.message);
+          setModalvariation("success");
+        } else if (res.data.status == 204 || res.data.status == 500) {
+          setOpenModal(true);
+          setModalmsg(res.data.message);
+          setModalvariation("warning");
+        }
         getapplicantscount(scholarshipId);
+        getapplicants();
         // console.log("qwertyu",res.data.body)
       })
       .catch((err) => console.log(err));
@@ -133,16 +149,26 @@ const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
     };
     const config = {
       method: "post",
-      url: `${baseUrl}/scholarship/proceed-to-next-scholarship-stage?loginUserId=${logindetails.userData.userId}&scholarshipId=${scholarshipId}`,
+      url: `${baseUrl}/scholarship/proceed-to-next-scholarship-stage`,
       headers: {
         "Content-Type": "application/json",
       },
-      // data: body,
+      data: body,
     };
 
     axios(config)
       .then((res) => {
+        if (res.data.status == 200) {
+          setOpenModal(true);
+          setModalmsg(res.data.message);
+          setModalvariation("success");
+        } else if (res.data.status == 204 || res.data.status == 500) {
+          setOpenModal(true);
+          setModalmsg(res.data.message);
+          setModalvariation("warning");
+        }
         getapplicantscount(scholarshipId);
+        getapplicants();
         // console.log("qwertyu",res.data.body)
       })
       .catch((err) => console.log(err));
@@ -159,34 +185,27 @@ const AllApplicants = ({ scholarshipId, getapplicantscount }) => {
       />
       <div className={classes.buttons}>
         {showGoToPreviousStageButton && (
-          <Button
-            variant="contained"
-            onClick={submitForPreviousStageButton}
-            className={classes.singleButton}
-          >
-            {previousButton}
-          </Button>
+          <Button variant="contained">Previous Stage</Button>
         )}
         {showSubmitForNextRoundButton && (
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.singleButton}
-            onClick={submitForNextRoundButton}
-          >
+          <Button variant="contained" color="primary">
             {submitButtonText}
           </Button>
         )}
         {showGoToNextStageButton && (
-          <Button
-            variant="contained"
-            color="secondary"
-            className={classes.singleButton}
-            onClick={submitForNextStageButton}
-          >
-            {nextButton}
+          <Button variant="contained" color="secondary">
+            Next Stage
           </Button>
         )}
+      </div>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <Typography variant="h5">
+          <b>Scholarship Name :</b> {name}
+        </Typography>
+        <Typography variant="h5" style={{ marginLeft: "5%" }}>
+          <b> Scholarship Status : </b>
+          {status}
+        </Typography>{" "}
       </div>
       {isLoading ? (
         applicantdata &&

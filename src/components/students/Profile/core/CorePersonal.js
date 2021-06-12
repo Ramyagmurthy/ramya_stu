@@ -28,6 +28,8 @@ import {
 import Modal from "../../../../components/atoms/Modal";
 import { withSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
 
 function CorePersonal(props) {
   const {
@@ -46,13 +48,27 @@ function CorePersonal(props) {
 
   useEffect(() => {
     getUserInfo(logindetails.userData.userId);
+    getMasterData();
   }, []);
+  const [genderId, setGenderId] = useState(1);
+  const [genderName, setGenderName] = useState("Male");
+  const [address, setAddress] = useState("");
+  const [dob, setDob] = useState("2000-01-01");
+  const [cityList, setCityList] = useState();
+  const [city, setCity] = useState("");
+  const [pinCode, setPinCode] = useState("");
+  const [adressM, setAdressM] = useState(false);
 
   const getUserInfo = (id) => {
     axios
       .get(baseUrl + `/student/load-student-profile-data?userId=${id}`)
       .then((res) => {
         setBaseInfo(res.data.body.studentPersonalDetailsDto);
+        console.log(res.data.body.studentPersonalDetailsDto);
+        if (res.data.body.studentPersonalDetailsDto.cityDto)
+          setCity({ ...res.data.body.studentPersonalDetailsDto.cityDto });
+        if (res.data.body.studentPersonalDetailsDto.pinCode)
+          setPinCode(res.data.body.studentPersonalDetailsDto.pinCode);
         setFname(res.data.body.studentBasicProfileDto.firstName);
         setLname(res.data.body.studentBasicProfileDto.lastName);
         if (res.data.body.studentPersonalDetailsDto.preferredPronounDto) {
@@ -82,13 +98,10 @@ function CorePersonal(props) {
 
   const corePer = logindetails.userData.studentPersonalDetailsDto;
 
-  const [genderId, setGenderId] = useState(1);
-  const [genderName, setGenderName] = useState("Male");
-  const [address, setAddress] = useState("");
-  const [dob, setDob] = useState("2000-01-01");
-
   const DobChange = (e) => {
-    setDob(e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate());
+    if (e) {
+      setDob(e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate());
+    }
   };
 
   const [fname, setFname] = useState("");
@@ -103,6 +116,11 @@ function CorePersonal(props) {
 
   const body = JSON.stringify({
     address: address,
+    cityDto: {
+      cityId: city.cityId,
+      name: city.name,
+      operationType: "U",
+    },
     dateOfBirth: `${dob}`,
     genderDto: {
       genderId: genderId,
@@ -115,6 +133,7 @@ function CorePersonal(props) {
     },
     studentId: studentId,
     userId: userId,
+    pinCode: pinCode,
   });
 
   const baseUrl = process.env.REACT_APP_URL;
@@ -128,6 +147,17 @@ function CorePersonal(props) {
       "Content-Type": "application/json",
     },
     data: body,
+  };
+
+  const getMasterData = () => {
+    axios
+      .get(`${baseUrl}/master/get-master-data`)
+      .then((res) => {
+        console.log(res.data.body);
+        setCityList(res.data.body.cityDtoList);
+        // console.log(res.data.body);
+      })
+      .catch((err) => console.log(`${baseUrl}/master/get-master-data`));
   };
 
   const saveCorePersonal = () => {
@@ -146,22 +176,26 @@ function CorePersonal(props) {
       setCheckFname(false);
     }
     // console.log(body);
-    axios(config)
-      .then((response) => {
-        //console.log(response.data.message);
-        setOpenModal(true);
-        setModalmsg(response.data.message);
-        setModalvariation("success");
-        props.enqueueSnackbar("Successfully Saved", {
-          variant: "success",
+    if (address.length <= 1000) {
+      axios(config)
+        .then((response) => {
+          //console.log(response.data.message);
+          setOpenModal(true);
+          setModalmsg(response.data.message);
+          setModalvariation("success");
+          props.enqueueSnackbar("Successfully Saved", {
+            variant: "success",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          props.enqueueSnackbar(err.data.message, {
+            variant: "error",
+          });
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        props.enqueueSnackbar(err.data.message, {
-          variant: "error",
-        });
-      });
+    } else {
+      setAdressM(true);
+    }
   };
 
   const genderSelect = (e) => {
@@ -216,17 +250,15 @@ function CorePersonal(props) {
                 >
                   <Input
                     value={fname}
-                    style={{ width: "50%", fontWeight:"bold"}}
+                    style={{ width: "50%", fontWeight: "bold" }}
                     disabled
                     onChange={(e) => setFname(e.target.value)}
-                    
                   />
                   <Input
-                    style={{ width: "50%", fontWeight:"bold"}}
+                    style={{ width: "50%", fontWeight: "bold" }}
                     value={lname}
                     disabled
                     onChange={(e) => setLname(e.target.value)}
-                    
                     endAdornment={
                       <InputAdornment position="end">
                         <People style={{ color: "grey" }} />
@@ -280,7 +312,40 @@ function CorePersonal(props) {
                   Please enter the permanent address
                 </Typography>
               )}
+              {adressM && (
+                <Typography style={{ color: "red" }} align="left">
+                  Exceeding 1000
+                </Typography>
+              )}
             </Grid>
+            <div className={classes.cityListClass}>
+              <FormControl variant="outlined" className={classes.cityfield}>
+                <InputLabel>City</InputLabel>
+                <Select
+                  label="City"
+                  value={city}
+                  onChange={(e) => {
+                    setCity(e.target.value);
+                  }}
+                >
+                  <MenuItem value={city}>
+                    <em>{city.name}</em>
+                  </MenuItem>
+                  {cityList &&
+                    cityList.map((cities) => (
+                      <MenuItem value={cities}>{cities.name}</MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+              <div className={classes.pincode}>
+                <TextField
+                  label="Pin Code"
+                  variant="outlined"
+                  value={pinCode}
+                  onChange={(e) => setPinCode(e.target.value)}
+                />
+              </div>
+            </div>
 
             <Grid
               container
@@ -300,12 +365,7 @@ function CorePersonal(props) {
                     value={genderName}
                     onChange={genderSelect}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
-                    >
+                    <div className={classes.flexgroup}>
                       <FormControlLabel
                         value="Male"
                         name={1}
@@ -353,12 +413,7 @@ function CorePersonal(props) {
                   value={prefG}
                   onChange={prefgenderchange}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
+                  <div className={classes.flexgroup}>
                     <FormControlLabel
                       value="He/Him"
                       name={1}
@@ -388,6 +443,7 @@ function CorePersonal(props) {
               </FormControl>
             </Grid>
           </Grid>
+
           <Grid item xs={12} style={{ marginTop: "50px" }}>
             <Button
               variant="contained"
@@ -414,10 +470,18 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "auto",
     marginLeft: "auto",
     paddingTop: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       padding: "0",
       margin: "0",
+      maxWidth: "100%",
+      padding: theme.spacing(5, 1, 5, 1),
     },
+  },
+  cityListClass: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing(5),
   },
   paperarea: {
     padding: theme.spacing(10),
@@ -438,5 +502,20 @@ const useStyles = makeStyles((theme) => ({
   },
   red: {
     color: "red",
+  },
+  cityfield: {
+    width: "40%",
+  },
+  pincode: {
+    width: "40%",
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+  flexgroup: {
+    display: "flex",
+    justifyContent: "space-between",
+    [theme.breakpoints.down("md")]: {
+      flexDirection: "column",
+    },
   },
 }));

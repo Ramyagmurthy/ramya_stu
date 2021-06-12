@@ -16,7 +16,7 @@ import keycloak from "./keycloak";
 import axios from "axios";
 
 const eventLogger = (event, error) => {
-  //console.log("onKeycloakEvent", event, error);
+  console.log("onKeycloakEvent", event, error);
 };
 
 const tokenLogger = (kc) => {
@@ -32,7 +32,7 @@ const tokenLogger = (kc) => {
     (response) => {
       // Do something with response data
       // return response;
-      //console.log("response", response);
+      console.log("response", response);
     },
     (error) => {
       // Do something with response error

@@ -244,7 +244,6 @@ function Language(props) {
             }
           }
           setExamCheck(examCheck);
-       
         }
       })
       .catch((err) => console.log(err));
@@ -252,7 +251,7 @@ function Language(props) {
 
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div >
       <SimpleModal
         //openModal={openModal}
         setOpenModal={setOpenModal}
@@ -260,7 +259,16 @@ function Language(props) {
         modalvariation={modalvariation}
         setModalvariation={setModalvariation}
       />
-      <Paper elevation={3} className={classes.paperarea}>
+      <div className="bio__buttons">
+        <div className="cancel__btn" type="button">
+          CANCEL
+        </div>
+        <div className="save__btn " type="button" onClick={SaveLanguage}>
+          SAVE DETAILS
+        </div>
+      </div>
+      {/* <Paper elevation={3} className={classes.paperarea}> */}
+      <div className="bio__container bg_blue p-3 mt-2 br_5">
         <Grid
           container
           xs={12}
@@ -271,25 +279,25 @@ function Language(props) {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h5">Language and Test Scores :</Typography>
+          <div class="educatoin__title">Language and Test Scores :</div>
           <TranslateIcon
             style={{
               fontSize: "50px",
               marginLeft: "20px",
             }}
           />
-          <Tooltip title="Edit">
+          {/* <Tooltip title="Edit">
             <IconButton>
               <EditIcon />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Grid>
         <Grid container className={classes.form}>
           {languages.map((language, index) => {
             if (language.operationType != "D")
               return (
                 <Grid container xs={12} key={index * 1000}>
-                  <Typography id="discrete-slider" gutterBottom>
+                  <Typography id="discrete-slider" gutterBottom style={{fontSize:"16px"}}>
                     {language.name}
                   </Typography>
                   <div className={classes.slider}>
@@ -366,6 +374,7 @@ function Language(props) {
                         style={{
                           display: "flex",
                           alignItems: "center",
+                          fontSize:"16px"
                         }}
                       >
                         {exam.name}
@@ -412,7 +421,7 @@ function Language(props) {
             </AccordionDetails>
           </Accordion>
 
-          <Grid
+          {/* <Grid
             xs={12}
             style={{
               marginTop: "50px",
@@ -429,9 +438,10 @@ function Language(props) {
             >
               Save
             </Button>
-          </Grid>
+          </Grid> */}
         </Grid>
-      </Paper>
+      </div>
+      {/* </Paper> */}
     </div>
   );
 }
@@ -446,9 +456,8 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
       width: "100%",
-      alignContent: "center",
+      padding: theme.spacing(5, 0, 0, 0),
     },
-    
   },
   paperarea: {
     padding: theme.spacing(10),
@@ -456,7 +465,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
       width: "100%",
-      alignContent: "center",
+      padding: theme.spacing(2, 2, 5, 2),
     },
   },
   formItem: {
@@ -480,4 +489,7 @@ const useStyles = makeStyles((theme) => ({
   red: {
     color: "red",
   },
+  form:{
+    padding:"0 20px 0 20px"
+  }
 }));

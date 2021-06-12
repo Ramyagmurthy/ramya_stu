@@ -229,12 +229,15 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
       width: "100%",
+      padding: theme.spacing(1),
+      paddingTop: theme.spacing(5),
     },
   },
   paperarea: {
     padding: theme.spacing(5, 10),
     [theme.breakpoints.down("md")]: {
       width: "100%",
+      padding: theme.spacing(2, 2, 5, 2),
     },
     backgroundImage: "linear-gradient(120deg,  #c2e9fb 100%, #a1c4fd 0%)",
     borderRadius: theme.spacing(2),

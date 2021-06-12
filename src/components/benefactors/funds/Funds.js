@@ -73,11 +73,11 @@ const Funds = ({ handleChange, state }) => {
       ? [...logindetails.masterData.scholarshipStatusDtoList]
       : [];
 
-      const behaviouralQuestionsList =
-    logindetails.masterData && logindetails.masterData.behaviouralQuestionsDtoList
+  const behaviouralQuestionsList =
+    logindetails.masterData &&
+    logindetails.masterData.behaviouralQuestionsDtoList
       ? [...logindetails.masterData.behaviouralQuestionsDtoList]
       : [];
-
 
   const baseUrl = process.env.REACT_APP_URL;
 
@@ -106,6 +106,11 @@ const Funds = ({ handleChange, state }) => {
 
   const [myscholarships, setmyscholarships] = useState([]);
 
+  const [snameM, setSnameM] = useState(false);
+  const [saimM, setSaimM] = useState(false);
+  const [sIcandidateM, setSIcandidateM] = useState(false);
+
+
   const [addfunds, setAddfunds] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [meritBase, setMeritBase] = useState("merit");
@@ -120,46 +125,49 @@ const Funds = ({ handleChange, state }) => {
   const [question, setQuestion] = useState([]);
   const [customeQuestion, setCustomQuestion] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [questionId, setQuestionId] = useState()
-  const [fields, setFields] = useState([{scholarshipQuestionMappingId: 0}]);
+  const [questionId, setQuestionId] = useState();
+  const [fields, setFields] = useState([]);
 
   const theme = useTheme();
 
   useEffect(() => {
     handleChange("a", 2);
     getAllScholarships(logindetails.user);
+    let values = logindetails.masterData.behaviouralQuestionsDtoList.filter(
+      (e) => e.isMandatory == 1
+    );
+    setQuestion(values);
     if (window.location.href.includes("/launchfund1")) {
       // setAddfunds(true);
     }
     // console.log(logindetails.user);
   }, []);
 
-  const handleChangeInput =(i, event) => {
+  const handleChangeInput = (i, event) => {
     const values = [...fields];
     values[i].answer = null;
     values[i].isMandatory = 0;
     values[i].operationType = "U";
-    values[i].otherQuestionName=event.target.value;
-    values[i].questionDescription="Add custom question";
-    values[i].questionId= questionId;
+    values[i].otherQuestionName = event.target.value;
+    values[i].questionDescription = "Add custom question";
+    values[i].questionId = questionId;
     // values[i].scholarshipQuestionMappingId=0;
     setFields(values);
     // setQuestion(...question,values)
     // console.log("filds",fields)
-
-  }
+  };
 
   const handleAdd = () => {
     const values = [...fields];
-    values.push({scholarshipQuestionMappingId: 0});
+    values.push({ scholarshipQuestionMappingId: 0 });
     setFields(values);
-  }
+  };
 
   const handleRemove = (i) => {
     const values = [...fields];
     values.splice(i, 1);
     setFields(values);
-  }
+  };
 
   const reLoadScholarships = () => {
     getAllScholarships(logindetails.user);
@@ -183,11 +191,10 @@ const Funds = ({ handleChange, state }) => {
 
     axios(config)
       .then((res) => {
-         //console.log("from funds page", res.data.body);
         if (res.data.body.scholarshipList != null) {
           setmyscholarships([...res.data.body.scholarshipList]);
-          setIsLoading(true);
         }
+        setIsLoading(true);
       })
       .catch((err) => console.log(err));
   };
@@ -228,6 +235,7 @@ const Funds = ({ handleChange, state }) => {
         scholarshipTypeId: 2,
       };
     }
+    
 
     // if (
     //   !sname ||
@@ -246,7 +254,9 @@ const Funds = ({ handleChange, state }) => {
     // ) {
     //   return;
     // } else {
-      let filteredQuestiones = question.filter((e) => e.questionDescription != "Add custom question")
+    let filteredQuestiones = question.filter(
+      (e) => e.questionDescription != "Add custom question"
+    );
     const body = {
       amount: Number(samount),
       benefactorId: logindetails.userData.benefactorId,
@@ -287,9 +297,7 @@ const Funds = ({ handleChange, state }) => {
         name: "Open",
         scholarshipStatusId: 1,
       },
-      scholarshipQuestionsSet:[
-          ...filteredQuestiones,
-        ...fields],
+      scholarshipQuestionsSet: [...filteredQuestiones, ...fields],
       // degreeDtoSet: [
       //   {
       //     degreeId: 1,
@@ -306,31 +314,40 @@ const Funds = ({ handleChange, state }) => {
       },
       data: body,
     };
-
+    if(sname.length > 1000){
+      setSnameM(true);
+    } else setSnameM(false);
+    if(saim.length > 2000){
+      setSaimM(true);
+    } else setSaimM(false);
+    if(sIcandidate.length > 1500){
+      setSIcandidateM(true);
+    } else setSIcandidateM(false);
+    if(sname.length <= 1000 && saim.length <= 2000 && sIcandidate.length <= 1500) {
     axios(config)
       .then((response) => {
         setOpenModal(true);
         setModalmsg(response.data.message);
         getAllScholarships(logindetails.user);
-        setSname("")
-        setSaim("")
-        setSIcandidate("")
-        setSamount(0)
-        setSdurationY(0)
-        setSdurationM(0)
-        setSno("")
-        setLastDate("2022-01-01")
-        setMeritBase("merit")
-        setMeritType("full")
+        setSname("");
+        setSaim("");
+        setSIcandidate("");
+        setSamount(0);
+        setSdurationY(0);
+        setSdurationM(0);
+        setSno("");
+        setLastDate("2022-01-01");
+        setMeritBase("merit");
+        setMeritType("full");
         setAddfunds(true);
-        setCity([])
-        setCountry([])
-        setGender([])
-        setStudyFields([])
-        setInstitutesList([])
-        setSelectionProcessRounds([])
-        setQuestion([])
-        setShowForm(false)
+        setCity([]);
+        setCountry([]);
+        setGender([]);
+        setStudyFields([]);
+        setInstitutesList([]);
+        setSelectionProcessRounds([]);
+        setQuestion([]);
+        setShowForm(false);
         if (response.data.status == 200) {
           setModalvariation("success");
         } else {
@@ -342,11 +359,16 @@ const Funds = ({ handleChange, state }) => {
         setOpenModal(true);
         setModalmsg("oops !! something went wrong ");
       });
+    }
     // }
   };
 
   const dateChange = (e) => {
-    setLastDate(e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate());
+    console.log(e);
+    if (e)
+      setLastDate(
+        e.getFullYear() + "-" + (e.getMonth() + 1) + "-" + e.getDate()
+      );
   };
 
   const handleChangeBase = (event) => {
@@ -394,19 +416,25 @@ const Funds = ({ handleChange, state }) => {
   const selectBehaviouralQuestionChange = (event) => {
     let values = event.target.value;
     // console.log("values",event.target.value ,values.some((e) => e.questionDescription == "Add custom question") )
-  
-    // console.log("getQuestionId",getQuestionId)
-    if(values.some((e) => e.questionDescription == "Add custom question")){
-      setShowForm(true)
-      let tempData = values.filter((e) => e.questionDescription == "Add custom question")
-    var getQuestionId = tempData[0].questionId;
-    setQuestionId(getQuestionId)
 
-    }else{
-      setShowForm(false)
+    // console.log("getQuestionId",getQuestionId)
+    if (values.some((e) => e.questionDescription == "Add custom question")) {
+      setShowForm(true);
+      setFields([{ scholarshipQuestionMappingId: 0 }]);
+
+      let tempData = values.filter(
+        (e) => e.questionDescription == "Add custom question"
+      );
+      var getQuestionId = tempData[0].questionId;
+      setQuestionId(getQuestionId);
+    } else {
+      setShowForm(false);
+      setFields([]);
     }
 
-    let value = logindetails.masterData.behaviouralQuestionsDtoList.filter((e) => e.isMandatory == 1)
+    let value = logindetails.masterData.behaviouralQuestionsDtoList.filter(
+      (e) => e.isMandatory == 1
+    );
     // console.log("value",value)
     for (let i = 0; i < values.length; i++) {
       if (values[i].isMandatory != 1) {
@@ -419,7 +447,6 @@ const Funds = ({ handleChange, state }) => {
     }
     setQuestion(value);
     // console.log("question",question )
-
   };
 
   const statusListChanges = (event) => {
@@ -446,10 +473,7 @@ const Funds = ({ handleChange, state }) => {
     };
   }
 
-  const displayQuestions = () =>{
-
-    
-  }
+  const displayQuestions = () => {};
 
   // const {
   //   register,
@@ -504,6 +528,11 @@ const Funds = ({ handleChange, state }) => {
             required
           />
         </div>
+        { snameM &&
+          <Typography style={{color:"red"}}>
+            Exceeding 1000 character
+          </Typography>
+        }
         <div className={classes.eachfield}>
           <Typography className={classes.labeltypo} variant="subtitle1">
             Scholarship Aim{" "}
@@ -519,6 +548,11 @@ const Funds = ({ handleChange, state }) => {
             required
           />
         </div>
+        { saimM &&
+          <Typography style={{color:"red"}}>
+            Exceeding 2000 character
+          </Typography>
+        }
         <div className={classes.eachfield}>
           <Typography className={classes.labeltypo} variant="subtitle1">
             Ideal Candidate{" "}
@@ -534,6 +568,11 @@ const Funds = ({ handleChange, state }) => {
             required
           />
         </div>
+        { sIcandidateM &&
+          <Typography style={{color:"red"}}>
+            Exceeding 2000 character
+          </Typography>
+        }
         <div className={classes.eachfield}>
           <Typography className={classes.labeltypo} variant="subtitle1">
             Based On <sup style={{ color: "red", marginLeft: "3px" }}>*</sup> :
@@ -617,7 +656,8 @@ const Funds = ({ handleChange, state }) => {
         </div>
         <div className={classes.eachfield}>
           <Typography className={classes.labeltypo} variant="subtitle1">
-            City <sup style={{ color: "red", marginLeft: "3px" }}>*</sup> :
+            Recepient City{" "}
+            <sup style={{ color: "red", marginLeft: "3px" }}>*</sup> :
           </Typography>
           <FormControl fullWidth>
             <Select
@@ -646,7 +686,8 @@ const Funds = ({ handleChange, state }) => {
         </div>
         <div className={classes.eachfield}>
           <Typography className={classes.labeltypo} variant="subtitle1">
-            Country <sup style={{ color: "red", marginLeft: "3px" }}>*</sup> :
+            Scholarship Country{" "}
+            <sup style={{ color: "red", marginLeft: "3px" }}>*</sup> :
           </Typography>
           <FormControl fullWidth>
             <Select
@@ -865,13 +906,11 @@ const Funds = ({ handleChange, state }) => {
                 </MenuItem>
               ))}
             </Select>
-            
           </FormControl>
         </div>
         <div className={classes.eachfield}>
           <Typography className={classes.labeltypo} variant="subtitle1">
-            Questions{" "}
-            <sup style={{ color: "red", marginLeft: "3px" }}>*</sup> :
+            Questions <sup style={{ color: "red", marginLeft: "3px" }}>*</sup> :
           </Typography>
           <FormControl fullWidth>
             <Select
@@ -881,7 +920,9 @@ const Funds = ({ handleChange, state }) => {
               multiple
               value={question}
               onChange={selectBehaviouralQuestionChange}
-              renderValue={(selected) => selected.map((ele) => ele.questionDescription + ", ")}
+              renderValue={(selected) =>
+                selected.map((ele) => ele.questionDescription + ", ")
+              }
               input={<Input />}
               MenuProps={MenuProps}
               required
@@ -893,22 +934,15 @@ const Funds = ({ handleChange, state }) => {
                   style={getStyles(name.name, city, theme)}
                 >
                   <Checkbox
-                    disabled={
-                      name.isMandatory == 1
-                        ? true
-                        : false
-                    }
+                    disabled={name.isMandatory == 1 ? true : false}
                     checked={
-                      name.isMandatory == 1
-                        ? true
-                        : question.indexOf(name) > -1
+                      name.isMandatory == 1 ? true : question.indexOf(name) > -1
                     }
                   />
                   <ListItemText primary={name.questionDescription} />
                 </MenuItem>
               ))}
             </Select>
-            
           </FormControl>
         </div>
         {/* <div className={classes.eachfield}>
@@ -943,41 +977,50 @@ const Funds = ({ handleChange, state }) => {
           </FormControl>
         </div> */}
         <Hidden xsUp={!showForm}>
-        <div className={classes.eachfield} style={{display: "flex",flexDirection:"column"}}>
-        {fields.map((field, idx) => {
-        return (
-          <>
-          <div key={`${field}-${idx}`} style={{width:"100%"}}>
-            <div style={{ display: "flex",margin:"10px" }}>
-              <TextField
-              fullWidth
-              variant="outlined"
-              value={field.otherQuestionName || ""}
-              name="scholarshipName"
-              placeholder="Enter text"
-              onChange={(e) => handleChangeInput(idx, e)}
-              style={{marginRight:"10px"}}
-            />
-              {/* <input
-                type="text"
-                placeholder="Enter text"
-                onChange={e => }
-              /> */}
-              <Button color="secondary" variant="contained" type="button" onClick={() => handleRemove(idx)}>
-                X
-              </Button>
-            </div>
-            
+          <div
+            className={classes.eachfield}
+            style={{ display: "flex", flexDirection: "column" }}
+          >
+            {fields.map((field, idx) => {
+              return (
+                <>
+                  <div key={`${field}-${idx}`} style={{ width: "100%" }}>
+                    <div style={{ display: "flex", margin: "10px" }}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        value={field.otherQuestionName || ""}
+                        name="scholarshipName"
+                        placeholder="Add custom question"
+                        onChange={(e) => handleChangeInput(idx, e)}
+                        style={{ marginRight: "10px" }}
+                      />
+                      {
+                        field.otherQuestionName && field.otherQuestionName.length > 1500 &&
+                        <Typography style={{color:"red"}}>Exceding 1500</Typography>
+                      }
+                      <Button
+                        color="secondary"
+                        variant="contained"
+                        type="button"
+                        onClick={() => handleRemove(idx)}
+                      >
+                        X
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              );
+            })}
+            <Button
+              variant="contained"
+              color="primary"
+              type="button"
+              onClick={() => handleAdd()}
+            >
+              +
+            </Button>
           </div>
-         
-          </>
-        );
-      })}
-       <Button variant="contained"
-          color="primary" type="button" onClick={() => handleAdd()}>
-        +
-      </Button>
-        </div>
         </Hidden>
 
         <Button
@@ -997,7 +1040,7 @@ const Funds = ({ handleChange, state }) => {
             !gender.length > 0 ||
             !studyFields.length > 0 ||
             !institutesList.length > 0 ||
-            !selectionProcessRounds.length > 0 
+            !selectionProcessRounds.length > 0
               ? true
               : false
           }
@@ -1013,6 +1056,7 @@ const Funds = ({ handleChange, state }) => {
               return (
                 <div key={i}>
                   <FundsCard
+                    index={i}
                     values={sholarship}
                     getAllScholarships={getAllScholarships}
                     reLoadScholarships={reLoadScholarships}
@@ -1035,7 +1079,7 @@ export default Funds;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundImage: "linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)",
+    // backgroundImage: "linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)",
   },
   body: {
     display: "flex",
@@ -1098,7 +1142,7 @@ const useStyles = makeStyles((theme) => ({
   red: {
     color: "red",
   },
-  addQuestion:{
-    marginLeft:theme.spacing(1)
-  }
+  addQuestion: {
+    marginLeft: theme.spacing(1),
+  },
 }));

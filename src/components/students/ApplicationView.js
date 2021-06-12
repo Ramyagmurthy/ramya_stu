@@ -19,9 +19,9 @@ const useStyles = makeStyles((theme) => ({
     height: "80vh",
     [theme.breakpoints.down("md")]: {
       flexDirection: "column",
-      maxWidth: "60%",
       marginRight: "auto",
       marginLeft: "auto",
+      justifyContent: "space-between",
     },
   },
 }));
@@ -29,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
 function Application({ handleChange }) {
   useEffect(() => {
     handleChange("a", 2);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }, []);
 
   const classes = useStyles();

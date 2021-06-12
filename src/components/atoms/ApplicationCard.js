@@ -18,18 +18,20 @@ import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import CloseIcon from "@material-ui/icons/Close";
 
-export default function ApplicationCards({ values }) {
+export default function ApplicationCards({ values, getAppliedScholaships }) {
   const classes = useStyles();
   // const [value, setvalue] = useState([]);
-   useEffect(() => {
-     //console.log(values)
-   }, []);
+  useEffect(() => {
+    //  console.log(values)
+  }, []);
 
   const [openModal, setOpenModal] = useState(false);
   const [modalmsg, setModalmsg] = useState("");
   const [modalvariation, setModalvariation] = useState("success");
+
   const [confirm, setConfirm] = useState(false);
   const [detailedView, setDetailedView] = useState(false);
+
   const logindetails = useContext(LoginContext);
   const baseUrl = process.env.REACT_APP_URL;
 
@@ -47,6 +49,7 @@ export default function ApplicationCards({ values }) {
       .then((res) => {
         setOpenModal(true);
         setModalmsg(res.data.message);
+        getAppliedScholaships();
       })
       .catch((err) => console.log(err));
     setConfirm(false);
@@ -103,6 +106,8 @@ export default function ApplicationCards({ values }) {
       padding: theme.spacing(1),
     },
   }))(MuiDialogActions);
+
+  // console.log("values",values)
   return (
     <Card className={classes.root} raised>
       <SimpleModal
@@ -257,6 +262,7 @@ export default function ApplicationCards({ values }) {
               <b>App Id :</b> {values.applicationId}
             </Typography>
           </div>
+
           <div style={{ width: "230px" }}>
             <Typography variant="subtitle1" color="textSecondary">
               <b>Duration :</b> {values.durationInYears} years
@@ -266,7 +272,7 @@ export default function ApplicationCards({ values }) {
               <b>Studost :</b> {values.benefactorName}
             </Typography> */}
             <Typography variant="subtitle1" color="textSecondary">
-              <b>Status :</b> {values.scholarshipStatusDto.name}
+              <b>Status :</b> {values.applicationStatusDto.label}
             </Typography>
             <Typography
               variant="subtitle1"
@@ -284,8 +290,9 @@ export default function ApplicationCards({ values }) {
                   color="primary"
                   size="large"
                   fullWidth
+                  style={{ textTransform: "none" }}
                 >
-                  {values.applicationStatusDto.name}
+                  {values.applicationStatusDto.label}
                 </Button>
               </div>
 
@@ -325,14 +332,11 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid black",
     padding: theme.spacing(2),
     width: "100%",
-    // marginRight: "auto",
-    // marginLeft: "auto",
   },
   details: {
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    // border: "2px solid red",
   },
 
   content: {
@@ -340,7 +344,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     [theme.breakpoints.down("md")]: {
       flexDirection: "column-reverse",
-      height: "350px",
+      height: "auto",
       alignItems: "center",
     },
   },
@@ -403,7 +407,7 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     padding: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
-      width: "100%"
+      width: "100%",
     },
   },
   details__accordian: {

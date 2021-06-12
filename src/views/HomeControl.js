@@ -12,7 +12,7 @@ import {
   useHistory,
 } from "react-router-dom";
 import image from "../assets/img/bg6.jpg";
-import Footer from "../components/students/Footer";
+import Footer from "../StaticPageComponents/LandingPageComponents/Footer";
 import axios from "axios";
 import { MasterContext } from "../Context/MasterContext";
 import { LoginContext } from "../Context/LoginContext";
@@ -59,7 +59,7 @@ function HomeControl() {
   });
 
   const eventLogger = (event, error) => {
-    //console.log("onKeycloakEvent", event, logindetails);
+    console.log("onKeycloakEvent", event, logindetails);
   };
 
   // refresh token function
@@ -152,7 +152,7 @@ function HomeControl() {
                 component={ScholarshipsApplicant}
               />
               <ProtectedRoute exact path="/homecontrol/profile">
-                <ProfileRoute handleChange={handleChange} />
+                <Profile handleChange={handleChange} />
               </ProtectedRoute>
               <ProtectedRoute exact path="/homecontrol/application">
                 <ApplicationView handleChange={handleChange} />
@@ -185,7 +185,6 @@ function HomeControl() {
               </ProtectedRoute> */}
             </Switch>
           </div>
-          <Footer />
         </div>
       ) : null}
     </Router>
@@ -197,19 +196,17 @@ export default HomeControl;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // backgroundImage: "linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%)",
-    backgroundPosition: "top center",
-    backgroundSize: "cover",
-    backgroundColor: "#f1f2f5",
+    // backgroundPosition: "top center",
+    // backgroundSize: "cover",
+    margin: "0px",
+    padding: "0px",
   },
   body: {
     margin: 0,
     padding: 0,
-    // paddingTop: "10px",
     maxWidth: "1350px",
     marginRight: "auto",
     marginLeft: "auto",
-    // opacity: "0.5",
     minHeight: "100vh",
   },
 }));

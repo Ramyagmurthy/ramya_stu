@@ -13,11 +13,24 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "80%",
     marginLeft: "10%",
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(5, 2, 5, 2),
+      width: "100%",
+      marginLeft: "0%",
+    },
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
     //color: theme.palette.text.secondary,
+  },
+  header: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1.2",
+    },
+  },
+  deatails: {
+    fontSize: "0.8",
   },
 }));
 
@@ -31,6 +44,10 @@ export default function FAQ_Students({ handleChange }) {
 
   useEffect(() => {
     handleChange("a", 4);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }, []);
 
   return (
@@ -57,18 +74,18 @@ export default function FAQ_Students({ handleChange }) {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography variant="h6">
+            <div className="faq__mini">
               1. Do I have to pay a benefactors back?{" "}
-            </Typography>
+            </div>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography varaint="srOnly">
+            <div className="faq__mini__text">
               We offer benefactors the options to provide scholarships or
               grants, soft loans, loans at market rates, and engage in income
               sharing agreements. Based on the selected mechanism by the
               benefactor, you will be required to repay your fund and will
               receive a timeline and guidelines on doing so.
-            </Typography>
+            </div>
           </AccordionDetails>
         </Accordion>
         {/* second FAQ */}
@@ -81,14 +98,14 @@ export default function FAQ_Students({ handleChange }) {
             aria-controls="panel2a-content"
             id="panel2a-header"
           >
-            <Typography variant="h6">2. Who are these benefactors?</Typography>
+            <div className="faq__mini">2. Who are these benefactors?</div>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography varaint="srOnly">
+            <div className="faq__mini__text">
               Benetafctors are high net worth individuals, industry leaders,
               philanthropists and other individuals who want to support the
               cause of accessible education by creating funds on our platform.
-            </Typography>
+            </div>
           </AccordionDetails>
         </Accordion>
         {/* third FAQ */}
@@ -101,16 +118,14 @@ export default function FAQ_Students({ handleChange }) {
             aria-controls="panel2a-content"
             id="panel2a-header"
           >
-            <Typography variant="h6">
-              3. What can I use the fund for?
-            </Typography>
+            <div className="faq__mini">3. What can I use the fund for?</div>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography varaint="srOnly">
+            <div className="faq__mini__text">
               Funds can be used to fully or partially fund your higher
               education-undergraduate, masters or PhD programs both in India and
               Abroad.
-            </Typography>
+            </div>
           </AccordionDetails>
         </Accordion>
         {/* fourth FAQ */}
@@ -123,14 +138,14 @@ export default function FAQ_Students({ handleChange }) {
             aria-controls="panel2a-content"
             id="panel2a-header"
           >
-            <Typography variant="h6">4. Who reviews my application?</Typography>
+            <div className="faq__mini">4. Who reviews my application?</div>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography varaint="srOnly">
+            <div className="faq__mini__text">
               Your application is reviewed by the benefactor/their team. We
               provide benefactors guidelines and support on reviewing
               applications should they require it.
-            </Typography>
+            </div>
           </AccordionDetails>
         </Accordion>
         {/* fifth FAQ */}
@@ -143,18 +158,18 @@ export default function FAQ_Students({ handleChange }) {
             aria-controls="panel2a-content"
             id="panel2a-header"
           >
-            <Typography variant="h6">
+            <div className="faq__mini">
               5. How will I receive the fund if I have been selected?
-            </Typography>
+            </div>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography varaint="srOnly">
+            <div className="faq__mini__text">
               Once you have been selected, you will receive a timeline on when
               you can expect the fund amount to be transferred. Working in
               tandem with you and your studost, we will ensure that funds are
               deposited into your account ahead of external payments you have to
               make.
-            </Typography>
+            </div>
           </AccordionDetails>
         </Accordion>
       </div>

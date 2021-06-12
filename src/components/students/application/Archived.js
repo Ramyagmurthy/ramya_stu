@@ -31,12 +31,16 @@ function Archived() {
       .catch((err) => console.log(err));
   };
 
+  const getAllScholarships = () =>{
+    getAppliedScholaships(student)
+  }
+
   return (
     <div className={classes.root}>
       {appliedScholarships.map((active, i) => {
         return (
           <div key={i}>
-            <ApplicationCard values={active} />
+            <ApplicationCard values={active} getAppliedScholaships={getAllScholarships}/>
           </div>
         );
       })}

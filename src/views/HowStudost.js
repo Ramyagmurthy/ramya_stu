@@ -14,123 +14,31 @@ import image6 from "./../assets/assets1/images/fund4.png";
 import image7 from "./../assets/assets1/images/fund5.png";
 import image8 from "./../assets/assets1/images/fund6.png";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Navbar from "../StaticPageComponents/StaticNavBar";
 
 import BenifactoreSignUp from "./../components/benefactors/BenifactoreSignUp";
 
 import "./../assets/assets1/css/main.css";
 import Login from "./../components/students/LoginPage";
+import { Link } from "react-router-dom";
 
 const HowStudost = () => {
-  const [logoWidth, setlogoWidth] = useState(160);
-  const matches = useMediaQuery("(min-width:600px)");
-
-  const [cssStyle, setCssStyle] = useState(
-    "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-  );
   const [loginStatus, setLoginStatus] = useState(false);
   const [benifatorStatus, setBenifatorStatus] = useState(false);
-
   useEffect(() => {
-    if (!matches) {
-      setlogoWidth(100);
-    }
-    // console.log(window.scrollY);
-    document.addEventListener("scroll", () => {
-      if (window.scrollY < 100)
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-        );
-      else
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-        );
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
     });
-  }, [window.scrollY]);
+  }, []);
 
-  const changeNav = () => {
-    if (cssStyle != "navbar navbar-expand-lg navbar-dark fixed-top bg-theme") {
-      setCssStyle("navbar navbar-expand-lg navbar-dark fixed-top bg-theme");
-    } else {
-      setCssStyle(
-        "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-      );
-    }
-  };
   return (
     <div>
+      <Navbar value="how" />
       {loginStatus && <Login setLoginStatus={setLoginStatus} />}
       {benifatorStatus && (
         <BenifactoreSignUp setBenifatorStatus={setBenifatorStatus} />
       )}
-      <nav className={cssStyle}>
-        <div className="container">
-          <a className="navbar-brand" href="/">
-            <img className="logo" src={image1} width={logoWidth} alt="logo" />
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-            onClick={changeNav}
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Home
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="about">
-                  About Us
-                </a>
-              </li>
-              <li className="nav-item active dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  data-toggle="dropdown"
-                  href="#"
-                >
-                  How It Works
-                </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <a href="student">Find a Scholarship</a>
-                  </li>
-                  <li>
-                    <a className="active" href="findscholar">
-                      Find a Scholar
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="contactus">
-                  Contact Us
-                </a>
-              </li>
-            </ul>
-            <a href="signin" style={{ color: "inherit" }}>
-              <div
-                className="btn"
-                onClick={() => {
-                  setLoginStatus(true);
-                }}
-              >
-                {" "}
-                LOGIN
-              </div>
-            </a>
-          </div>
-        </div>
-      </nav>
-
       <div
         id="slider"
         className="carousel slide"
@@ -168,14 +76,19 @@ const HowStudost = () => {
         <div className="container">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <a href="/">Home</a>
+              <Link to="/">
+                <a>Home</a>
+              </Link>
             </li>
             <li className="breadcrumb-item">
-              <a href="about">About Us</a>
+              <a>How it Works</a>
             </li>
-            <li className="breadcrumb-item">
-              <a href="student">FIND A SCHOLARSHIP</a>
-            </li>
+            {/* <li className="breadcrumb-item">
+              <a href="student" style={{ cursor: "pointer" }}>
+                FIND A FUND
+              </a>
+            </li> */}
+
             <li className="breadcrumb-item active" aria-current="page">
               Find a Scholar
             </li>
@@ -222,9 +135,9 @@ const HowStudost = () => {
             <div className="text fund">
               Are you someone who had the privilege of benefiting from a great
               education? Do you believe that a strong educational foundation can
-              empower future leaders to create strong societal impact? If so,
-              you can give back to a community of aspiring students by becoming
-              their StuDost.
+              empower young leaders to create societal impact? If so, you can
+              give back to a community of aspiring students by becoming their
+              StuDost.
             </div>
           </div>
         </div>
@@ -242,7 +155,7 @@ const HowStudost = () => {
             <div className="heading fund mob-hide">What is a StuDost fund?</div>
             <div className="text fund">
               StuDost funds are created by industry leaders, philanthropists and
-              benefactors who wish to support a student gain an excellent higher
+              benefactors who wish to help a student gain access to higher
               education. Through your fund, you can choose to provide aid to
               students seeking an undergraduate or postgraduate degree anywhere
               in the world.
@@ -332,8 +245,6 @@ const HowStudost = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

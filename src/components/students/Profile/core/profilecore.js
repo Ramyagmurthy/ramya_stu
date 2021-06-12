@@ -36,7 +36,7 @@ import PublishOutlinedIcon from "@material-ui/icons/PublishOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import { ToggleButtonGroup } from "@material-ui/lab";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import { Grid, Hidden, IconButton } from "@material-ui/core";
+import { Grid, Hidden, IconButton, Tab, Tabs } from "@material-ui/core";
 import ListIcon from "@material-ui/icons/List";
 import Professional from "./Professional";
 import Language from "./Language";
@@ -50,12 +50,18 @@ import Submission from "./Submission";
 // import { Route } from "./../../../../Route";
 import { useHistory } from "react-router-dom";
 import ProfileBase from "../ProfileBase";
+import { DriveEtaSharp } from "@material-ui/icons";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      margin: "-24px",
+      padding: "0px",
+    },
   },
 
   drawer: {
@@ -63,6 +69,12 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: theme.spacing(25),
     // maxHeight: theme.spacing(70),
     borderRadius: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      margin: "0px",
+      maxWidth: "100%",
+      // position: "fixed",
+      // top: "0",
+    },
   },
   drawerPaper: {
     width: theme.spacing(20),
@@ -87,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProfileCore({ handleChange }) {
   useEffect(() => {
-    handleChange("a", 1);
+    // handleChange("a", 1);
   }, []);
 
   let history = useHistory();
@@ -105,17 +117,14 @@ export default function ProfileCore({ handleChange }) {
   const Lists = () => {
     return (
       <List>
-        <Link to="/homecontrol/profile/" style={{ textDecoration: "none" }}>
+        {/* <Link to="/homecontrol/profile/" style={{ textDecoration: "none" }}>
           <ListItem button style={{ color: "grey" }} active>
             <ListItemText primary="Base" />
             <PermIdentityIcon />
           </ListItem>
         </Link>
-        <Divider />
-        <Link
-          to="/homecontrol/profile/profilecore/"
-          style={{ textDecoration: "none" }}
-        >
+        <Divider /> */}
+        <Link to="/homecontrol/profile/" style={{ textDecoration: "none" }}>
           <ListItem button style={{ color: "grey" }} active>
             <ListItemText primary="Personal" />
             <PermIdentityIcon />
@@ -184,16 +193,7 @@ export default function ProfileCore({ handleChange }) {
           </ListItem>
         </Link>
         <Divider />
-        {/* <Link
-          to="/homecontrol/profile/profilecore/experience"
-          style={{ textDecoration: "none" }}
-        >
-          <ListItem button style={{ color: "grey" }}>
-            <ListItemText primary="EXPERIENCE ABROAD" />
-            <BallotOutlinedIcon />
-          </ListItem>
-        </Link>
-        <Divider /> */}
+
         <Link
           to="/homecontrol/profile/profilecore/recommendation"
           style={{ textDecoration: "none" }}
@@ -229,25 +229,25 @@ export default function ProfileCore({ handleChange }) {
 
   return (
     <Router>
-      <Redirect to="/homecontrol/profile" />
-
+      {/* <Hidden mdUp> 
+      <MobileCoreTabs />
+       </Hidden> */}
       <div className={classes.root}>
-        <Paper elevation={3} className={classes.drawer}>
-          <Hidden mdDown>
+        <div className={classes.drawer}>
+          {/* <Hidden mdDown>
             <div className={classes.drawerContainer}>
               <Lists />
             </div>
-          </Hidden>
-        </Paper>
+          </Hidden> */}
+          <MobileCoreTabs />
+        </div>
 
         <main className={classes.content}>
           <Switch>
-            <Route exact path="/homecontrol/profile/" component={ProfileBase} />
-            <Route
-              exact
-              path="/homecontrol/profile/profilecore/"
-              component={CorePersonal}
-            />
+            {/* <Route exact path="/homecontrol/profile/" component={ProfileBase} /> */}
+            <Route exact path="/homecontrol/profile/">
+              <Redirect to="/homecontrol/profile/profilecore/bio" />
+            </Route>
             <Route
               path="/homecontrol/profile/profilecore/bio"
               component={Bio}

@@ -32,14 +32,18 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
       width: "100%",
+      padding: theme.spacing(5, 0, 0, 0),
     },
   },
   paperarea: {
+    display: "none",
     padding: theme.spacing(10),
     paddingTop: theme.spacing(5),
     borderRadius: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
-      width: "100%",
+      [theme.breakpoints.down("md")]: {
+        padding: theme.spacing(2, 2, 5, 2),
+      },
     },
   },
   body: {
@@ -56,8 +60,8 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     borderRadius: theme.spacing(2),
   },
-  red:{
-    color:"red"
+  red: {
+    color: "red",
   },
   addEditDelete: {
     display: "flex",
@@ -83,21 +87,30 @@ function Recommendation(props) {
   const [index2, setIndex2] = useState(null);
   // logindetails.userData.recommendationDetailsList
 
-  
-
-  const [contactNumber, setContactNumber] = useState(recom ? recom.contactNumber : "");
+  const [contactNumber, setContactNumber] = useState(
+    recom ? recom.contactNumber : ""
+  );
   const [emailId, setEmailId] = useState(recom ? recom.emailId : "");
   const [firstName, setFirstName] = useState(recom ? recom.firstName : "");
   const [lastName, setLastName] = useState(recom ? recom.lastName : "");
+
+  const [emailIdM, setEmailIdM] = useState(false);
+  const [firstNameM, setFirstNameM] = useState(false);
+  const [lastNameM, setLastNameM] = useState(false);
 
   const [contactNumberEdit, setContactNumberEdit] = useState("");
   const [emailIdEdit, setEmailIdEdit] = useState("");
   const [firstNameEdit, setFirstNameEdit] = useState("");
   const [lastNameEdit, setLastNameEdit] = useState("");
 
+  const [emailIdEditM, setEmailIdEditM] = useState(false);
+  const [firstNameEditM, setFirstNameEditM] = useState(false);
+  const [lastNameEditM, setLastNameEditM] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
   useEffect(() => {
     getuserInfo(logindetails.user);
-  }, [contactNumberEdit,emailIdEdit,firstNameEdit,lastNameEdit]);
+  }, [contactNumberEdit, emailIdEdit, firstNameEdit, lastNameEdit]);
 
   const [openModal, setOpenModal] = useState(false);
   const [modalmsg, setModalmsg] = useState("");
@@ -132,26 +145,45 @@ function Recommendation(props) {
 
   const saveRecomen = (e) => {
     // e.preventDefault();
-
-    axios(config)
-      .then((response) => {
-        // console.log(response.data);
-        setOpenModal(true);
-        setModalmsg(response.data.message);
-        setShow(true);
-        getuserInfo(logindetails.user);
-        props.enqueueSnackbar("Successfully Saved", {
-          variant: "success",
+    if (emailId.length > 255) {
+      setEmailIdM(true);
+    } else setEmailIdM(false);
+    if (firstName.length > 255) {
+      setFirstNameM(true);
+    } else setFirstNameM(false);
+    if (lastName.length > 255) {
+      setLastNameM(true);
+    } else setLastNameM(false);
+    if (
+      emailId.length <= 255 &&
+      firstName.length <= 255 &&
+      lastName.length <= 255
+    ) {
+      axios(config)
+        .then((response) => {
+          // console.log(response.data);
+          setOpenModal(true);
+          setModalmsg(response.data.message);
+          setShow(true);
+          getuserInfo(logindetails.user);
+          props.enqueueSnackbar("Successfully Saved", {
+            variant: "success",
+          });
+          setShowForm(!showForm);
+          setContactNumber("");
+          setEmailId("");
+          setFirstName("");
+          setLastName("");
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenModal(true);
+          setModalmsg(err.data.message);
+          props.enqueueSnackbar(err.data.message, {
+            variant: "error",
+          });
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        setOpenModal(true);
-        setModalmsg(err.data.message);
-        props.enqueueSnackbar(err.data.message, {
-          variant: "error",
-        });
-      });
+    }
   };
 
   const getuserInfo = (id) => {
@@ -185,27 +217,42 @@ function Recommendation(props) {
       },
       data: body,
     };
-    axios(config)
-      .then((response) => {
-        // console.log(response.data);
-        setOpenModal(true);
-        setModalmsg(response.data.message);
-        setShowEdit(true);
-        getuserInfo(logindetails.user);
-        props.enqueueSnackbar("Successfully Edited", {
-          variant: "success",
+
+    if (emailIdEdit.length > 255) {
+      setEmailIdEditM(true);
+    } else setEmailIdEditM(false);
+    if (firstNameEdit.length > 255) {
+      setFirstNameEditM(true);
+    } else setFirstNameEditM(false);
+    if (lastNameEdit.length > 255) {
+      setLastNameEditM(true);
+    } else setLastNameEditM(false);
+    if (
+      emailIdEdit.length <= 255 &&
+      firstNameEdit.length <= 255 &&
+      lastNameEdit.length <= 255
+    ) {
+      axios(config)
+        .then((response) => {
+          // console.log(response.data);
+          setOpenModal(true);
+          setModalmsg(response.data.message);
+          setShowEdit(true);
+          getuserInfo(logindetails.user);
+          props.enqueueSnackbar("Successfully Edited", {
+            variant: "success",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenModal(true);
+          setModalmsg(err.data.message);
+          props.enqueueSnackbar(err.data.message, {
+            variant: "error",
+          });
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        setOpenModal(true);
-        setModalmsg(err.data.message);
-        props.enqueueSnackbar(err.data.message, {
-          variant: "error",
-        });
-      });
-    
-  }
+    }
+  };
 
   const deleteTheItem = (reco) => {
     //console.log(reco);
@@ -234,30 +281,28 @@ function Recommendation(props) {
     };
 
     axios(config)
-    .then((response) => {
-      // console.log(response.data);
-      setOpenModal(true);
-      setModalmsg(response.data.message);
-      setShow(true);
-      getuserInfo(logindetails.user);
-      props.enqueueSnackbar("Successfully deleted", {
-        variant: "success",
+      .then((response) => {
+        // console.log(response.data);
+        setOpenModal(true);
+        setModalmsg(response.data.message);
+        setShow(true);
+        getuserInfo(logindetails.user);
+        props.enqueueSnackbar("Successfully deleted", {
+          variant: "success",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        setOpenModal(true);
+        setModalmsg(err.data.message);
+        props.enqueueSnackbar(err.data.message, {
+          variant: "error",
+        });
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      setOpenModal(true);
-      setModalmsg(err.data.message);
-      props.enqueueSnackbar(err.data.message, {
-        variant: "error",
-      });
-    });
-
   };
 
-  
   return (
-    <div className={classes.root}>
+    <div>
       <SimpleModal
         //openModal={openModal}
         setOpenModal={setOpenModal}
@@ -265,6 +310,411 @@ function Recommendation(props) {
         modalvariation={modalvariation}
         setModalvariation={setModalvariation}
       />
+
+      <div className="bio__buttons mb-5">
+        <div className="cancel__btn" type="button">
+          CANCEL
+        </div>
+        <div className="save__btn " type="button">
+          SUBMIT
+        </div>
+      </div>
+      <div className="bio__container">
+        <div className="title__container bg_blue p-2 pr-3 pl-3 mb-3">
+          <div className="educatoin__title">Add Your Recommendations.</div>
+          <IconButton
+            style={{ backgroundColor: "#3586ff",border:0,outline:0 }}
+            onClick={() => setShowForm(!showForm)}
+          >
+            <AddIcon
+              style={{
+                color: "white",
+                transform: showForm ? "rotate(45deg)" : "",
+              }}
+            />
+          </IconButton>
+        </div>
+        {showForm && (
+          <>
+            {" "}
+            <div className="bio__buttons mb-3">
+              <div
+                className="btn education__greenbtn"
+                type="button"
+                style={{ border: "none", marginRight: "10px" }}
+                onClick={() => {
+                  setShowForm(!showForm);
+                  setContactNumber("");
+                  setEmailId("");
+                  setFirstName("");
+                  setLastName("");
+                }}
+              >
+                CLEAR DETAILS
+              </div>
+              <div
+                className="btn education__greenbtn"
+                type="button"
+                onClick={saveRecomen}
+              >
+                SAVE DETAILS
+              </div>
+            </div>
+            <div className="container bg_blue br_5">
+              <form>
+                <div className="row">
+                  <div className="col-6 p-2">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Contact Number"
+                      value={contactNumber}
+                      onChange={(e) => setContactNumber(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-6 p-2">
+                    <input
+                      type="email"
+                      className="form-control"
+                      placeholder="Email"
+                      value={emailId}
+                      onChange={(e) => setEmailId(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-6 p-2">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="First Name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-6 p-2">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Last name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+          </>
+        )}
+        <div class="mt-5">
+          {recom
+            ? recom.map((reco, index) => {
+                return (
+                  <>
+                    <div className="bg_blue pl-4 pr-4 pt-2 pb-2 mt-3 br_5">
+                      <Card className={classes.ccard} raised key={index}>
+                        <div className={classes.addEditDelete}>
+                          <Typography>No : {index + 1}</Typography>
+                          <div>
+                            <Tooltip title="Edit">
+                              <IconButton
+                                style={{border:0,outline:0}}
+                                onClick={() => {
+                                  setShowEdit(false);
+                                  setIndex2(index);
+                                  setRecId(reco.recommendationId);
+                                  setContactNumberEdit(reco.contactNumber);
+                                  setEmailIdEdit(reco.emailId);
+                                  setFirstNameEdit(reco.firstName);
+                                  setLastNameEdit(reco.lastName);
+                                }}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                              <IconButton
+                              style={{border:0,outline:0}}
+                                onClick={() => {
+                                  deleteTheItem(reco);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        </div>
+                        <Typography style={{fontSize:"16px"}}> 
+                          {reco.firstName} {reco.lastName}
+                        </Typography>
+                        <Typography>
+                          Contact no : {reco.contactNumber}
+                        </Typography>
+
+                        <Typography>Email : {reco.emailId}</Typography>
+                      </Card>
+                      {index === index2 && (
+                        <Hidden xsUp={showEdit}>
+                          <form
+                            className={classes.body}
+                            onSubmit={handleSubmit(saveRecomen2)}
+                          >
+                            <IconButton
+                              style={{border:0,outline:0}}
+                              onClick={() => {
+                                setShowEdit(true);
+                                setIndex2(index);
+                              }}
+                            >
+                              <CancelIcon />
+                            </IconButton>
+                            <TextField
+                              variant="outlined"
+                              label="Contact no"
+                              fullWidth
+                              value={contactNumberEdit}
+                              onChange={(e) =>
+                                setContactNumberEdit(e.target.value)
+                              }
+                              inputProps={{
+                                ...register("contactNo", {
+                                  required: true,
+                                  pattern: /^\d{10}$/,
+                                }),
+                              }}
+                            />
+                            {errors.contactNo && (
+                              <>
+                                {errors.contactNo.type === "required" ? (
+                                  <Typography style={{ color: "red" }}>
+                                    please enter the contact Number
+                                  </Typography>
+                                ) : (
+                                  <Typography style={{ color: "red" }}>
+                                    please enter the 10 digit Numeric Number
+                                  </Typography>
+                                )}
+                              </>
+                            )}
+                            <TextField
+                              variant="outlined"
+                              label="Email Id"
+                              type="email"
+                              fullWidth
+                              value={emailIdEdit}
+                              onChange={(e) => setEmailIdEdit(e.target.value)}
+                              inputProps={{
+                                ...register("email", {
+                                  required: true,
+                                  pattern:
+                                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                                }),
+                              }}
+                            />
+                            {errors.email && (
+                              <Typography style={{ color: "red" }}>
+                                please enter the Email id
+                              </Typography>
+                            )}
+                            {emailIdEditM && (
+                              <Typography style={{ color: "red" }}>
+                                please enter the Email id
+                              </Typography>
+                            )}
+                            <TextField
+                              variant="outlined"
+                              label="First Name"
+                              value={firstNameEdit}
+                              onChange={(e) => setFirstNameEdit(e.target.value)}
+                              fullWidth
+                              inputProps={{
+                                ...register("firstName", {
+                                  required: true,
+                                  pattern: /[a-zA-Z]/,
+                                }),
+                              }}
+                            />
+                            {errors.firstName && (
+                              <Typography style={{ color: "red" }}>
+                                please enter the first name
+                              </Typography>
+                            )}
+                            {firstNameEditM && (
+                              <Typography style={{ color: "red" }}>
+                                Exceeding 255 character
+                              </Typography>
+                            )}
+                            <TextField
+                              variant="outlined"
+                              label="Last Name"
+                              fullWidth
+                              value={lastNameEdit}
+                              onChange={(e) => setLastNameEdit(e.target.value)}
+                              inputProps={{
+                                ...register("lastName", {
+                                  required: true,
+                                  pattern: /[a-zA-Z]/,
+                                }),
+                              }}
+                            />
+                            {errors.lastName && (
+                              <Typography style={{ color: "red" }}>
+                                please enter the last name
+                              </Typography>
+                            )}
+                            {lastNameEditM && (
+                              <Typography style={{ color: "red" }}>
+                                Exceeding 255 character
+                              </Typography>
+                            )}
+                            <Button
+                              type="submit"
+                              // onClick={(e) => saveRecomen(e)}
+                              type="submit"
+                              variant="contained"
+                              color="primary"
+                              fullWidth
+                              className={classes.submit}
+                            >
+                              Save
+                            </Button>
+                          </form>
+                        </Hidden>
+                      )}
+                    </div>
+                  </>
+                );
+              })
+            : null}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              display: "none",
+            }}
+          >
+            <Typography>Add Contacts</Typography>
+            <Tooltip title="Click to add more contacts">
+              <IconButton onClick={() => setShow(false)} style={{border:0,outline:0 }}>
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+          <Hidden xsUp={show}>
+            <IconButton
+              onClick={() => {
+                setShow(true);
+              }}
+              style={{ marginLeft: "90%",border:0,outline:0 }}
+            >
+              <CancelIcon />
+            </IconButton>
+            <form className={classes.body} onSubmit={handleSubmit(saveRecomen)}>
+              <TextField
+                variant="outlined"
+                label="Contact no"
+                fullWidth
+                value={contactNumber}
+                onChange={(e) => setContactNumber(e.target.value)}
+                inputProps={{
+                  ...register("contactNo", {
+                    required: true,
+                    pattern: /^\d{10}$/,
+                  }),
+                }}
+              />
+              {errors.contactNo && (
+                <Typography style={{ color: "red" }}>
+                  please enter the contact Number
+                </Typography>
+              )}
+              <TextField
+                variant="outlined"
+                label="Email Id"
+                type="email"
+                fullWidth
+                value={emailId}
+                onChange={(e) => setEmailId(e.target.value)}
+                inputProps={{
+                  ...register("email", {
+                    required: true,
+                    pattern:
+                      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                  }),
+                }}
+              />
+              {errors.email && (
+                <Typography style={{ color: "red" }}>
+                  please enter the Email id
+                </Typography>
+              )}
+              {emailIdM && (
+                <Typography style={{ color: "red" }}>
+                  Exceeding 255 character
+                </Typography>
+              )}
+              <TextField
+                variant="outlined"
+                label="First Name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                fullWidth
+                inputProps={{
+                  ...register("firstName", {
+                    required: true,
+                    pattern: /[a-zA-Z]/,
+                  }),
+                }}
+              />
+              {errors.firstName && (
+                <Typography style={{ color: "red" }}>
+                  please enter the first name
+                </Typography>
+              )}
+              {firstNameM && (
+                <Typography style={{ color: "red" }}>
+                  Exceeding 255 character
+                </Typography>
+              )}
+              <TextField
+                variant="outlined"
+                label="Last Name"
+                fullWidth
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                inputProps={{
+                  ...register("lastName", {
+                    required: true,
+                    pattern: /[a-zA-Z]/,
+                  }),
+                }}
+              />
+              {errors.lastName && (
+                <Typography style={{ color: "red" }}>
+                  please enter the last name
+                </Typography>
+              )}
+              {lastNameM && (
+                <Typography style={{ color: "red" }}>
+                  Exceeding 255 character
+                </Typography>
+              )}
+              <Button
+                type="submit"
+                // onClick={(e) => saveRecomen(e)}
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                className={classes.submit}
+              >
+                Save
+              </Button>
+            </form>
+          </Hidden>
+        </div>
+      </div>
+
       <Paper elevation={3} className={classes.paperarea}>
         <Grid
           container
@@ -287,127 +737,175 @@ function Recommendation(props) {
         <div>
           {recom
             ? recom.map((reco, index) => {
-                return (<>
-                  <Card className={classes.ccard} raised key={index}>
-                    <div className={classes.addEditDelete}>
-                      <Typography>No : {index + 1}</Typography>
-                      <div>
-                        <Tooltip title="Edit">
-                          <IconButton onClick={()=>{
-                                    setShowEdit(false); 
-                                    setIndex2(index); 
-                                    setRecId(reco.recommendationId); 
-                                    setContactNumberEdit(reco.contactNumber); 
-                                    setEmailIdEdit(reco.emailId); 
-                                    setFirstNameEdit(reco.firstName); 
-                                    setLastNameEdit(reco.lastName); }}>
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete">                        
-                          <IconButton onClick={() => {deleteTheItem(reco)}}>
-                            <DeleteIcon  />
-                          </IconButton>
-                        </Tooltip>
+                return (
+                  <>
+                    <Card className={classes.ccard} raised key={index}>
+                      <div className={classes.addEditDelete}>
+                        <Typography>No : {index + 1}</Typography>
+                        <div>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              style={{border:0,outline:0 }}
+                              onClick={() => {
+                                setShowEdit(false);
+                                setIndex2(index);
+                                setRecId(reco.recommendationId);
+                                setContactNumberEdit(reco.contactNumber);
+                                setEmailIdEdit(reco.emailId);
+                                setFirstNameEdit(reco.firstName);
+                                setLastNameEdit(reco.lastName);
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              style={{border:0,outline:0 }}
+                              onClick={() => {
+                                deleteTheItem(reco);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </div>
                       </div>
-                    </div>
-                    <Typography>
-                      {reco.firstName} {reco.lastName}
-                    </Typography>
-                    <Typography>Contact no : {reco.contactNumber}</Typography>
+                      <Typography>
+                        {reco.firstName} {reco.lastName}
+                      </Typography>
+                      <Typography>Contact no : {reco.contactNumber}</Typography>
 
-                    <Typography>Email : {reco.emailId}</Typography>
-                  </Card>
-                  {index=== index2 &&  <Hidden xsUp={showEdit}>
-            <form className={classes.body} onSubmit={handleSubmit(saveRecomen2)}>
-                  <IconButton onClick={()=>{setShowEdit(true); setIndex2(index)}}>
-                          <CancelIcon/>
-                  </IconButton>
-              <TextField
-                variant="outlined"
-                label="Contact no"
-                fullWidth
-                value={contactNumberEdit}
-                onChange={(e) => setContactNumberEdit(e.target.value)}
-                inputProps={{
-                  ...register("contactNo", { required: true, pattern: /^\d{10}$/ }),
-                }}
-              />
-              {errors.contactNo && (<>
-                {errors.contactNo.type === "required" ?
-                <Typography style={{color: "red"}}>
-                  please enter the contact Number 
-                </Typography> : 
-                <Typography style={{color: "red"}}>
-                please enter the 10 digit Numeric Number
-              </Typography>
-                }
-              </>)}
-              <TextField
-                variant="outlined"
-                label="Email Id"
-                type="email"
-                fullWidth
-                value={emailIdEdit}
-                onChange={(e) => setEmailIdEdit(e.target.value)}
-                inputProps={{
-                  ...register("email", { required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/ }),
-                }}
-              />
-              {errors.email && (
-                <Typography style={{color: "red"}}>
-                  please enter the Email id
-                </Typography>
-              )}
-              <TextField
-                variant="outlined"
-                label="First Name"
-                value={firstNameEdit}
-                onChange={(e) => setFirstNameEdit(e.target.value)}
-                fullWidth
-                inputProps={{
-                  ...register("firstName", {
-                    required: true,
-                    pattern: /[a-zA-Z]/,
-                  }),
-                }}
-              />
-              {errors.firstName && (
-                <Typography style={{color: "red"}}>
-                  please enter the first name
-                </Typography>
-              )}
-              <TextField
-                variant="outlined"
-                label="Last Name"
-                fullWidth
-                value={lastNameEdit}
-                onChange={(e) => setLastNameEdit(e.target.value)}
-                inputProps={{
-                  ...register("lastName", {
-                    required: true,
-                    pattern: /[a-zA-Z]/,
-                  }),
-                }}
-              />
-              {errors.lastName && (
-                <Typography style={{color: "red"}}>
-                  please enter the last name
-                </Typography>
-              )}
-              <Button
-                type="submit"
-                // onClick={(e) => saveRecomen(e)}
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                className={classes.submit}
-              >
-                Save
-              </Button>
-            </form>
-          </Hidden>}
+                      <Typography>Email : {reco.emailId}</Typography>
+                    </Card>
+                    {index === index2 && (
+                      <Hidden xsUp={showEdit}>
+                        <form
+                          className={classes.body}
+                          onSubmit={handleSubmit(saveRecomen2)}
+                        >
+                          <IconButton
+                            style={{border:0,outline:0 }}
+                            onClick={() => {
+                              setShowEdit(true);
+                              setIndex2(index);
+                            }}
+                          >
+                            <CancelIcon />
+                          </IconButton>
+                          <TextField
+                            variant="outlined"
+                            label="Contact no"
+                            fullWidth
+                            value={contactNumberEdit}
+                            onChange={(e) =>
+                              setContactNumberEdit(e.target.value)
+                            }
+                            inputProps={{
+                              ...register("contactNo", {
+                                required: true,
+                                pattern: /^\d{10}$/,
+                              }),
+                            }}
+                          />
+                          {errors.contactNo && (
+                            <>
+                              {errors.contactNo.type === "required" ? (
+                                <Typography style={{ color: "red" }}>
+                                  please enter the contact Number
+                                </Typography>
+                              ) : (
+                                <Typography style={{ color: "red" }}>
+                                  please enter the 10 digit Numeric Number
+                                </Typography>
+                              )}
+                            </>
+                          )}
+                          <TextField
+                            variant="outlined"
+                            label="Email Id"
+                            type="email"
+                            fullWidth
+                            value={emailIdEdit}
+                            onChange={(e) => setEmailIdEdit(e.target.value)}
+                            inputProps={{
+                              ...register("email", {
+                                required: true,
+                                pattern:
+                                  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                              }),
+                            }}
+                          />
+                          {errors.email && (
+                            <Typography style={{ color: "red" }}>
+                              please enter the Email id
+                            </Typography>
+                          )}
+                          {emailIdEditM && (
+                            <Typography style={{ color: "red" }}>
+                              please enter the Email id
+                            </Typography>
+                          )}
+                          <TextField
+                            variant="outlined"
+                            label="First Name"
+                            value={firstNameEdit}
+                            onChange={(e) => setFirstNameEdit(e.target.value)}
+                            fullWidth
+                            inputProps={{
+                              ...register("firstName", {
+                                required: true,
+                                pattern: /[a-zA-Z]/,
+                              }),
+                            }}
+                          />
+                          {errors.firstName && (
+                            <Typography style={{ color: "red" }}>
+                              please enter the first name
+                            </Typography>
+                          )}
+                          {firstNameEditM && (
+                            <Typography style={{ color: "red" }}>
+                              Exceeding 255 character
+                            </Typography>
+                          )}
+                          <TextField
+                            variant="outlined"
+                            label="Last Name"
+                            fullWidth
+                            value={lastNameEdit}
+                            onChange={(e) => setLastNameEdit(e.target.value)}
+                            inputProps={{
+                              ...register("lastName", {
+                                required: true,
+                                pattern: /[a-zA-Z]/,
+                              }),
+                            }}
+                          />
+                          {errors.lastName && (
+                            <Typography style={{ color: "red" }}>
+                              please enter the last name
+                            </Typography>
+                          )}
+                          {lastNameEditM && (
+                            <Typography style={{ color: "red" }}>
+                              Exceeding 255 character
+                            </Typography>
+                          )}
+                          <Button
+                            type="submit"
+                            // onClick={(e) => saveRecomen(e)}
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            className={classes.submit}
+                          >
+                            Save
+                          </Button>
+                        </form>
+                      </Hidden>
+                    )}
                   </>
                 );
               })
@@ -422,15 +920,20 @@ function Recommendation(props) {
           >
             <Typography>Add Contacts</Typography>
             <Tooltip title="Click to add more contacts">
-              <IconButton onClick={() => setShow(false)}>
+              <IconButton onClick={() => setShow(false)} style={{border:0,outline:0 }}>
                 <AddIcon />
               </IconButton>
             </Tooltip>
           </div>
           <Hidden xsUp={show}>
-          <IconButton onClick={()=>{setShow(true)}} style={{marginLeft:"90%"}}>
-                          <CancelIcon/>
-                  </IconButton>
+            <IconButton
+              onClick={() => {
+                setShow(true);
+              }}
+              style={{ marginLeft: "90%",border:0,outline:0 }}
+            >
+              <CancelIcon />
+            </IconButton>
             <form className={classes.body} onSubmit={handleSubmit(saveRecomen)}>
               <TextField
                 variant="outlined"
@@ -439,11 +942,14 @@ function Recommendation(props) {
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
                 inputProps={{
-                  ...register("contactNo", { required: true, pattern: /^\d{10}$/ }),
+                  ...register("contactNo", {
+                    required: true,
+                    pattern: /^\d{10}$/,
+                  }),
                 }}
               />
               {errors.contactNo && (
-                <Typography style={{color: "red"}}>
+                <Typography style={{ color: "red" }}>
                   please enter the contact Number
                 </Typography>
               )}
@@ -455,12 +961,21 @@ function Recommendation(props) {
                 value={emailId}
                 onChange={(e) => setEmailId(e.target.value)}
                 inputProps={{
-                  ...register("email", { required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/ }),
+                  ...register("email", {
+                    required: true,
+                    pattern:
+                      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                  }),
                 }}
               />
               {errors.email && (
-                <Typography style={{color: "red"}}>
+                <Typography style={{ color: "red" }}>
                   please enter the Email id
+                </Typography>
+              )}
+              {emailIdM && (
+                <Typography style={{ color: "red" }}>
+                  Exceeding 255 character
                 </Typography>
               )}
               <TextField
@@ -477,8 +992,13 @@ function Recommendation(props) {
                 }}
               />
               {errors.firstName && (
-                <Typography style={{color: "red"}}>
+                <Typography style={{ color: "red" }}>
                   please enter the first name
+                </Typography>
+              )}
+              {firstNameM && (
+                <Typography style={{ color: "red" }}>
+                  Exceeding 255 character
                 </Typography>
               )}
               <TextField
@@ -495,8 +1015,13 @@ function Recommendation(props) {
                 }}
               />
               {errors.lastName && (
-                <Typography style={{color: "red"}}>
+                <Typography style={{ color: "red" }}>
                   please enter the last name
+                </Typography>
+              )}
+              {lastNameM && (
+                <Typography style={{ color: "red" }}>
+                  Exceeding 255 character
                 </Typography>
               )}
               <Button

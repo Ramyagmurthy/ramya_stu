@@ -11,121 +11,36 @@ import image5 from "./../assets/assets1/images/icon3.svg";
 import image6 from "./../assets/assets1/images/fund1.png";
 import image7 from "./../assets/assets1/images/fund2.png";
 import image8 from "./../assets/assets1/images/fund3.png";
-
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useHistory,
+} from "react-router-dom";
 import "./../assets/assets1/css/main.css";
 import Login from "./../components/students/LoginPage";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-
+import Navbar from "../StaticPageComponents/StaticNavBar";
 import BenifactoreSignUp from "./../components/benefactors/BenifactoreSignUp";
 
 const LandingView = () => {
-  const [logoWidth, setlogoWidth] = useState(160);
-  const matches = useMediaQuery("(min-width:600px)");
-
-  const [cssStyle, setCssStyle] = useState(
-    "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-  );
   const [loginStatus, setLoginStatus] = useState(false);
   const [benifatorStatus, setBenifatorStatus] = useState(false);
-
   useEffect(() => {
-    if (!matches) {
-      setlogoWidth(100);
-    }
-    // console.log(window.scrollY);
-    document.addEventListener("scroll", () => {
-      if (window.scrollY < 100)
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top maxedheight"
-        );
-      else
-        setCssStyle(
-          "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-        );
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
     });
-  }, [window.scrollY]);
+  }, []);
 
-  const changeNav = () => {
-    if (cssStyle != "navbar navbar-expand-lg navbar-dark fixed-top bg-theme") {
-      setCssStyle("navbar navbar-expand-lg navbar-dark fixed-top bg-theme");
-    } else {
-      setCssStyle(
-        "navbar navbar-expand-lg navbar-dark fixed-top bg-theme maxedheight"
-      );
-    }
-  };
   return (
     <>
+      <Navbar value="how" />
       {loginStatus && <Login setLoginStatus={setLoginStatus} />}
       {benifatorStatus && (
         <BenifactoreSignUp setBenifatorStatus={setBenifatorStatus} />
       )}
-      <nav className={cssStyle}>
-        <div className="container">
-          <a className="navbar-brand" href="/">
-            <img className="logo" src={image1} width={logoWidth} alt="logo" />
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-            onClick={changeNav}
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Home
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="about">
-                  About Us
-                </a>
-              </li>
-              <li className="nav-item active dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  data-toggle="dropdown"
-                  href="#"
-                >
-                  How It Works
-                </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <a className="active" href="student">
-                      Find a Scholarship
-                    </a>
-                  </li>
-                  <li>
-                    <a href="findscholar">Find a Scholar</a>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="contactus">
-                  Contact Us
-                </a>
-              </li>
-            </ul>
-            <div
-              className="btn"
-              onClick={() => {
-                setLoginStatus(true);
-              }}
-            >
-              {" "}
-              LOGIN
-            </div>
-          </div>
-        </div>
-      </nav>
       {/* <!---------- END: Header ------------->
 
 <!---------- START: Slider -------------> */}
@@ -158,7 +73,7 @@ const LandingView = () => {
                   margin: "0px",
                 }}
               >
-                Find a Scholarship
+                Find a Fund
               </p>
             </div>
           </div>
@@ -171,17 +86,19 @@ const LandingView = () => {
         <div className="container">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <a href="/">Home</a>
+              <Link to="/">
+                <a>Home</a>
+              </Link>
             </li>
             <li className="breadcrumb-item">
-              <a href="about">About Us</a>
+              <a>How It Works</a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              FIND A SCHOLARSHIP
+              FIND A FUND
             </li>
-            <li className="breadcrumb-item">
-              <a href="findscholar">Find a Scholar</a>
-            </li>
+            {/* <li className="breadcrumb-item">
+              <a href="/findscholar">Find a Scholar</a>
+            </li> */}
           </ol>
         </div>
       </nav>
@@ -195,7 +112,7 @@ const LandingView = () => {
               Expand Your Horizons<span></span>
             </div>
             <div className="subheading">
-              Learn how you can find a scholarship on StuDost
+              Learn how you can receive funding through StuDost
             </div>
             <div
               className="btn"
@@ -245,8 +162,8 @@ const LandingView = () => {
             <div className="text fund">
               StuDost funds are designed to support students across various
               disciplines to pursue an undergraduate or postgraduate program
-              anywhere in the world. These may be partial or full scholarships
-              awarded based on merit and/or need.
+              anywhere in the world. These funds may fully or partially cover
+              your education and can be based on merit and/or need.
             </div>
           </div>
         </div>
@@ -335,8 +252,6 @@ const LandingView = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </>
   );
 };

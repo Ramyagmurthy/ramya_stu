@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -24,7 +24,7 @@ import Navbar from "./Navbar";
 import Nav from "../Nav";
 import { LoginContext } from "../../Context/LoginContext";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Modal from "@material-ui/core/Modal";
 import Dialog from "@material-ui/core/Dialog";
 import CancelIcon from "@material-ui/icons/Cancel";
@@ -33,6 +33,15 @@ import CloseIcon from "@material-ui/icons/Close";
 import BenifactoreSignUp from "./../benefactors/BenifactoreSignUp";
 
 export default function SignIn({ setLoginStatus }) {
+  const logindetails = useContext(LoginContext);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (logindetails.login == true) {
+      history.push("/homecontrol/home");
+    }
+  }, []);
+
   const [open, setOpen] = useState(true);
   const [benifatorStatus, setBenifatorStatus] = useState(false);
 
@@ -42,7 +51,6 @@ export default function SignIn({ setLoginStatus }) {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const logindetails = useContext(LoginContext);
 
   const submitForm = (e) => {
     logindetails.handlesubmit(e);
@@ -183,41 +191,27 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: theme.spacing(50),
   },
   paper: {
-    // marginTop: theme.spacing(20),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    // width: "300px",
+
     marginRight: "auto",
     marginLeft: "auto",
-    // padding: theme.spacing(3),
-    // paddingBottom: theme.spacing(2),
   },
-  avatar: {
-    // margin: theme.spacing(1),
-    // backgroundColor: theme.palette.primary.main,
-    // marginTop: theme.spacing(3),
-  },
+
   form: {
-    // width: "80%", // Fix IE 11 issue.
-    // marginLeft: theme.spacing(4),
-    // marginTop: theme.spacing(-5),
-    // width: "300px",
     padding: theme.spacing(5),
   },
   submit: {
     margin: theme.spacing(0, 0, 2),
     width: "100%",
-    // backgroundImage: "linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)",
+    textTransform: "none",
+    fontSize: "14px",
   },
-  formitems: {
-    // marginTop: theme.spacing(20),
-    // width: "300px",
-  },
+  formitems: {},
   forminputs: {
     width: "100%",
     margin: theme.spacing(1, 0, 1, 0),
-    // padding: theme.spacing(0, 1, 0, 1),
   },
 
   closeicon: {

@@ -20,6 +20,8 @@ function Active() {
     getAppliedScholaships(student);
   }, []);
 
+
+
   const getAppliedScholaships = (id) => {
     axios
       .get(
@@ -32,12 +34,16 @@ function Active() {
       .catch((err) => console.log(err));
   };
 
+  const getAllScholarships = () =>{
+    getAppliedScholaships(student)
+  }
+
   return (
     <div className={classes.root}>
       {appliedScholarships.map((active, i) => {
         return (
           <div key={i}>
-            <ApplicationCard values={active} />
+            <ApplicationCard values={active} getAppliedScholaships={getAllScholarships}/>
           </div>
         );
       })}
